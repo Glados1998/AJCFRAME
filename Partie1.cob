@@ -459,7 +459,7 @@
 
                 WHEN +100
                    WRITE ENR-ERRORLOG
-                   MOVE 'ERROR 100 : la donnée existe déja'
+                   MOVE 'ERROR 100 : la donnÃ©e existe dÃ©ja'
                    TO ERROR-LINE
                    WRITE ENR-ERRORLOG
 
@@ -496,14 +496,14 @@
 
                 WHEN -503
                    WRITE ENR-ERRORLOG
-                   MOVE 'ERROR -503 : Curseur déja ouvert '
+                   MOVE 'ERROR -503 : Curseur dÃ©ja ouvert '
                    TO ERROR-LINE
                    WRITE ENR-ERRORLOG
                    PERFORM ABEND-PROG
 
                 WHEN -532
                    WRITE ENR-ERRORLOG
-                   MOVE 'ERROR -532 : Violation de clé étrangère'
+                   MOVE 'ERROR -532 : Violation de clÃ© Ã©trangÃ¨re'
                    TO ERROR-LINE
                    WRITE ENR-ERRORLOG
 
