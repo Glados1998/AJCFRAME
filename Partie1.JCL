@@ -3,7 +3,7 @@
 //    COND=(4,LT),TIME=(0,30)
 //*
 //*------------------------------------------------------*
-//* ===> CHANGER XX PAR N¢ DU GROUPE   (XX 01 @ 15)      *
+//* ===> CHANGER XX PAR NÂ¢ DU GROUPE   (XX 01 @ 15)      *
 //*      CHANGER     API9DB$ PAR LE NOM DU PROGRAMME     *
 //*------------------------------------------------------*
 //*
