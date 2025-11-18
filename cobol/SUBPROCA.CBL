@@ -1,32 +1,64 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID. SUBPROCA.
       *****************************************************************
-      * SUBPROCA - SELECT ALL RECORDS FROM API4.ITEMS TABLE          *
-      * RETURNS FORMATTED RESULT TO MAINDRV FOR WRITING TO FILES     *
+      * SUBPROCA - Aggregate quantities per product (last 3 years)   *
+      * Uses actual years from ORDERS table: 2023, 2024, 2025        *
       *****************************************************************
        
        ENVIRONMENT DIVISION.
        
        DATA DIVISION.
        WORKING-STORAGE SECTION.
-      *    SQL COMMUNICATION AREA
            EXEC SQL
                INCLUDE SQLCA
            END-EXEC.
        
-      *    INCLUDE DCLGEN FOR ITEMS TABLE
+           EXEC SQL
+               INCLUDE DCLIPROD
+           END-EXEC.
+           
            EXEC SQL
                INCLUDE DCLITEMS
            END-EXEC.
-       
-       01  WS-RECORD-COUNT     PIC 9(5) VALUE 0.
-       01  WS-RESULT-LINE      PIC X(100).
-       
-      *    CURSOR DECLARATION
+           
            EXEC SQL
-               DECLARE ITEMSCUR CURSOR FOR
-               SELECT O_NO, P_NO, QUANTITY, PRICE
-               FROM API4.ITEMS
+               INCLUDE DCLORD
+           END-EXEC.
+       
+      *    Host variables for aggregated results
+       01  HV-PRODUCT-NO       PIC X(3).
+       01  HV-DESCRIPTION      PIC X(30).
+       01  HV-QTY-2025         PIC S9(9) COMP-3 VALUE 0.
+       01  HV-QTY-2024         PIC S9(9) COMP-3 VALUE 0.
+       01  HV-QTY-2023         PIC S9(9) COMP-3 VALUE 0.
+       
+      *    Display formatting variables
+       01  WS-DISPLAY-LINE     PIC X(80).
+       01  WS-PRODUCT-COUNT    PIC 9(3) VALUE 0.
+       01  ED-QTY-2025         PIC Z(2)9.
+       01  ED-QTY-2024         PIC Z(2)9.
+       01  ED-QTY-2023         PIC Z(2)9.
+
+      *    SQLCODE variable
+       01  WS-SQLCODE-DISPLAY  PIC -999999999.
+       
+      *    CURSOR: Aggregate quantities by product for years 2023-2025
+           EXEC SQL
+               DECLARE PRODAGG CURSOR FOR
+               SELECT P.P_NO,
+                      P.DESCRIPTION,
+                      SUM(CASE WHEN YEAR(O.O_DATE) = 2025
+                              THEN I.QUANTITY ELSE 0 END),
+                      SUM(CASE WHEN YEAR(O.O_DATE) = 2024
+                              THEN I.QUANTITY ELSE 0 END),
+                      SUM(CASE WHEN YEAR(O.O_DATE) = 2023
+                              THEN I.QUANTITY ELSE 0 END)
+               FROM API4.PRODUCTS P
+               LEFT JOIN API4.ITEMS I ON I.P_NO = P.P_NO  
+               LEFT JOIN API4.ORDERS O ON O.O_NO = I.O_NO
+               WHERE O.O_DATE IS NOT NULL
+               GROUP BY P.P_NO, P.DESCRIPTION
+               ORDER BY P.DESCRIPTION
            END-EXEC.
        
        LINKAGE SECTION.
@@ -34,62 +66,77 @@
        
        PROCEDURE DIVISION USING LS-RESULT-BUFFER.
        
-           PERFORM OPEN-CURSOR.
-           IF SQLCODE = 0
-               PERFORM FETCH-RECORDS
-               PERFORM CLOSE-CURSOR
-               STRING 'SUBPROCA: Processed ' WS-RECORD-COUNT 
-                      ' records from API4.ITEMS'
-                   DELIMITED BY SIZE INTO LS-RESULT-BUFFER
-           ELSE
-               STRING 'SUBPROCA: ERROR opening cursor - SQLCODE: '
-                      SQLCODE
-                   DELIMITED BY SIZE INTO LS-RESULT-BUFFER
-           END-IF.
-           
-           EXIT PROGRAM.
-       
-       OPEN-CURSOR.
+      *--- Open cursor and display header ---------------------------*
            EXEC SQL
-               OPEN ITEMSCUR
+               OPEN PRODAGG
            END-EXEC.
-           IF SQLCODE NOT = 0
-               DISPLAY 'ERROR OPENING CURSOR - SQLCODE: ' SQLCODE
+           
+                  IF SQLCODE NOT = 0
+           MOVE SQLCODE TO WS-SQLCODE-DISPLAY
+           STRING 'SUBPROCA: Error opening cursor - SQLCODE: '
+                  WS-SQLCODE-DISPLAY DELIMITED BY SIZE
+              INTO LS-RESULT-BUFFER
+           END-STRING
+           EXIT PROGRAM
            END-IF.
-           EXIT.
+
+      *--- Display table header -------------------------------------*
+           DISPLAY '//////////////////////////////////////////////////'.
+           DISPLAY '// Product                 | 2025 | 2024 | 2023 //'.
+           DISPLAY '//////////////////////////////////////////////////'.
        
-       FETCH-RECORDS.
+      *--- Fetch and display aggregated data ------------------------*
            PERFORM UNTIL SQLCODE NOT = 0
                EXEC SQL
-                   FETCH ITEMSCUR
-                   INTO :ITMO-NO,
-                        :ITMP-NO,
-                        :ITMQUANTITY,
-                        :ITMPRICE
+                   FETCH PRODAGG
+                   INTO :HV-PRODUCT-NO,
+                        :HV-DESCRIPTION,
+                        :HV-QTY-2025,
+                        :HV-QTY-2024,
+                        :HV-QTY-2023
                END-EXEC
                
                IF SQLCODE = 0
-                   ADD 1 TO WS-RECORD-COUNT
-                   DISPLAY 'Order: ' ITMO-NO ' | ' 
-                           'Part: ' ITMP-NO ' | ' 
-                           'Qty: ' ITMQUANTITY ' | '
-                           'Price: ' ITMPRICE
+                   ADD 1 TO WS-PRODUCT-COUNT
+                   
+      *            Format quantities for display
+                   MOVE HV-QTY-2025 TO ED-QTY-2025
+                   MOVE HV-QTY-2024 TO ED-QTY-2024
+                   MOVE HV-QTY-2023 TO ED-QTY-2023
+                   
+      *            Build and display product line (compact format)
+                   STRING '// ' DELIMITED BY SIZE 
+                          HV-DESCRIPTION(1:20) DELIMITED BY SIZE
+                          ' - ' DELIMITED BY SIZE
+                          HV-PRODUCT-NO DELIMITED BY SIZE
+                          ' | ' DELIMITED BY SIZE
+                          ED-QTY-2025 DELIMITED BY SIZE
+                          ' | ' DELIMITED BY SIZE
+                          ED-QTY-2024 DELIMITED BY SIZE
+                          ' | ' DELIMITED BY SIZE
+                          ED-QTY-2023 DELIMITED BY SIZE
+                          ' //' DELIMITED BY SIZE
+                          INTO WS-DISPLAY-LINE
+                   END-STRING
+                   DISPLAY WS-DISPLAY-LINE
                ELSE
-                   IF SQLCODE = 100
-                       DISPLAY 'End of data - Total records: ' 
-                               WS-RECORD-COUNT
-                   ELSE
-                       DISPLAY 'ERROR FETCHING - SQLCODE: ' SQLCODE
+                   IF SQLCODE NOT = 100
+                     DISPLAY 'SUBPROCA: Fetch error - SQLCODE: ' SQLCODE
                    END-IF
                END-IF
            END-PERFORM.
-           EXIT.
        
-       CLOSE-CURSOR.
+      *--- Close cursor and build result message --------------------*
            EXEC SQL
-               CLOSE ITEMSCUR
+               CLOSE PRODAGG
            END-EXEC.
-           IF SQLCODE NOT = 0
-               DISPLAY 'ERROR CLOSING CURSOR - SQLCODE: ' SQLCODE
-           END-IF.
-           EXIT.
+           
+           DISPLAY '//////////////////////////////////////////////////'.
+
+      *--- Return summary to MAINDRV --------------------------------*
+           STRING 'SUBPROCA: Quantity aggregation complete - '
+                  WS-PRODUCT-COUNT ' products processed'
+                  DELIMITED BY SIZE INTO LS-RESULT-BUFFER
+           END-STRING.
+           
+           EXIT PROGRAM.
