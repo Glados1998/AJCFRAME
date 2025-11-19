@@ -1,0 +1,86 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. COBG53DT.
+       ENVIRONMENT DIVISION.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  WS-DATE-6            PIC 9(6).
+       01  WS-YY                PIC 99.
+       01  WS-MM                PIC 99.
+       01  WS-DD                PIC 99.
+       01  WS-DOW               PIC 9.
+       01  WS-YYYY              PIC 9(4).
+       01  WS-YYYY-TXT          PIC X(4).
+       01  WS-DD-TEXT.
+           05 WS-DD-TEXT-CHARS  PIC XX.
+           05 WS-DD-LEN         PIC 9.
+       01  WS-DAY-NAME          PIC X(9).
+       01  WS-MONTH-NAME        PIC X(9).
+       LINKAGE SECTION.
+       01  LK-DATE-TEXT         PIC X(40).
+       PROCEDURE DIVISION USING LK-DATE-TEXT.
+       MAIN-SECTION.
+           MOVE SPACES TO LK-DATE-TEXT
+           ACCEPT WS-DATE-6 FROM DATE
+           MOVE WS-DATE-6(1:2) TO WS-YY
+           MOVE WS-DATE-6(3:2) TO WS-MM
+           MOVE WS-DATE-6(5:2) TO WS-DD
+           ACCEPT WS-DOW FROM DAY-OF-WEEK
+           PERFORM BUILD-DAY-NAME
+           PERFORM BUILD-MONTH-NAME
+           COMPUTE WS-YYYY = 2000 + WS-YY
+           MOVE WS-YYYY TO WS-YYYY-TXT
+           PERFORM BUILD-DAY-OF-MONTH-TEXT
+           PERFORM BUILD-DATE-TEXT
+           GOBACK
+           .
+       BUILD-DAY-NAME.
+           EVALUATE WS-DOW
+              WHEN 1 MOVE "Monday   "  TO WS-DAY-NAME
+              WHEN 2 MOVE "Tuesday  "  TO WS-DAY-NAME
+              WHEN 3 MOVE "Wednesday"  TO WS-DAY-NAME
+              WHEN 4 MOVE "Thursday "  TO WS-DAY-NAME
+              WHEN 5 MOVE "Friday   "  TO WS-DAY-NAME
+              WHEN 6 MOVE "Saturday "  TO WS-DAY-NAME
+              WHEN 7 MOVE "Sunday   "  TO WS-DAY-NAME
+              WHEN OTHER MOVE "UNKNOWN " TO WS-DAY-NAME
+           END-EVALUATE
+           .
+       BUILD-MONTH-NAME.
+           EVALUATE WS-MM
+              WHEN 1  MOVE "January  " TO WS-MONTH-NAME
+              WHEN 2  MOVE "February " TO WS-MONTH-NAME
+              WHEN 3  MOVE "March    " TO WS-MONTH-NAME
+              WHEN 4  MOVE "April    " TO WS-MONTH-NAME
+              WHEN 5  MOVE "May      " TO WS-MONTH-NAME
+              WHEN 6  MOVE "June     " TO WS-MONTH-NAME
+              WHEN 7  MOVE "July     " TO WS-MONTH-NAME
+              WHEN 8  MOVE "August   " TO WS-MONTH-NAME
+              WHEN 9  MOVE "September" TO WS-MONTH-NAME
+              WHEN 10 MOVE "October  " TO WS-MONTH-NAME
+              WHEN 11 MOVE "November " TO WS-MONTH-NAME
+              WHEN 12 MOVE "December " TO WS-MONTH-NAME
+              WHEN OTHER MOVE "UNKNOWN " TO WS-MONTH-NAME
+           END-EVALUATE
+           .
+       BUILD-DAY-OF-MONTH-TEXT.
+           MOVE SPACES        TO WS-DD-TEXT-CHARS
+           MOVE 2             TO WS-DD-LEN
+           MOVE WS-DD         TO WS-DD-TEXT-CHARS
+           IF WS-DD-TEXT-CHARS(1:1) = '0'
+              MOVE WS-DD-TEXT-CHARS(2:1) TO WS-DD-TEXT-CHARS(1:1)
+              MOVE 1 TO WS-DD-LEN
+           END-IF
+           .
+       BUILD-DATE-TEXT.
+           MOVE SPACES TO LK-DATE-TEXT
+           STRING
+              WS-DAY-NAME          DELIMITED BY SPACE
+              ", "                 DELIMITED BY SIZE
+              WS-MONTH-NAME        DELIMITED BY SPACE
+              " "                  DELIMITED BY SIZE
+              WS-DD-TEXT-CHARS(1:WS-DD-LEN) DELIMITED BY SIZE
+              ", "                 DELIMITED BY SIZE
+              WS-YYYY-TXT          DELIMITED BY SIZE
+           INTO LK-DATE-TEXT
+           END-STRING
+           .
