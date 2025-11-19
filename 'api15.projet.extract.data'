@@ -1,0 +1,11 @@
+101;2023-02-15;ABC Company;123 Main Street;New York;NY;10001;555-1234  ;Sales;Doe;John;0.05;Mouse Bluetooth;0.05;  10; 00025.99; 00025.99
+101;2023-02-15;ABC Company;123 Main Street;New York;NY;10001;555-1234  ;Sales;Doe;John;0.05;Router;0.05;  15; 00035.75; 00035.75
+102;2023-03-20;XYZ Corporation;456 Elm Street;Los Angeles;CA;90001;          ;Marketing;Smith;Alice;0.03;Router;0.03;  10; 00035.75; 00035.75
+103;2024-02-25;LMN Enterprises;789 Oak Avenue;Chicago;IL;60601;          ;Engineering;Johnson;David;0.02;External Hard Drive;0.02;  10; 00050.25; 00050.25
+104;2024-07-20;XYZ Corporation;456 Elm Street;Los Angeles;CA;90001;          ;Sales;Doe;John;0.05;Mouse Bluetooth;0.05;  10; 00025.99; 00025.99
+104;2024-07-20;XYZ Corporation;456 Elm Street;Los Angeles;CA;90001;          ;Sales;Doe;John;0.05;Battery;0.05;  15; 00014.49; 00015.49
+105;2025-05-15;ABC Company;123 Main Street;New York;NY;10001;555-1234  ;Marketing;Smith;Alice;0.03;Router;0.03;   5; 00035.75; 00035.75
+105;2025-05-15;ABC Company;123 Main Street;New York;NY;10001;555-1234  ;Marketing;Smith;Alice;0.03;External Hard Drive;0.03;   5; 00050.25; 00050.25
+105;2025-05-15;ABC Company;123 Main Street;New York;NY;10001;555-1234  ;Marketing;Smith;Alice;0.03;USB Drive;0.03;  50; 00008.25; 00010.25
+106;2025-06-23;ABC Company;123 Main Street;New York;NY;10001;555-1234  ;Marketing;Smith;Alice;0.03;Battery;0.03;   5; 00015.49; 00015.49
+106;2025-06-23;ABC Company;123 Main Street;New York;NY;10001;555-1234  ;Marketing;Smith;Alice;0.03;Keyboard;0.03;  50; 00008.00; 00010.00
