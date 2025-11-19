@@ -63,4 +63,6 @@ Exécution : `CREAPS`
 ## Fichiers générés
 
 | `EXTRACT.DATA` par `XTRCTG54` >>> Données extraites de la base DB2 | Séquentiel
+
 | `FACTURES.DATA` par `CODISTIL` >>> Factures finales générées | Séquentiel
+
