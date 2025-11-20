@@ -41,15 +41,16 @@
            05 F-FNAME                PIC X(20).
            05 F-COM-RATE             PIC X(4).
            05 F-DESCRIPTION          PIC X(30).
-           05 F-DISCOUNT-RATE        PIC X(4).
+           05 F-PNO                  PIC X(4).
            05 F-QTY                  PIC X(4).
-           05 F-PRICE-SOLD           PIC X(8).
-           05 F-PRICE-CATALOG        PIC X(8).
+           05 F-PRICE-SOLD           PIC X(9).
+           05 F-PRICE-CATALOG        PIC X(9).
        01  WS-CURRENT-ORDER          PIC X(3) VALUE SPACES.
        01  WS-FIRST-ORDER            PIC X    VALUE 'Y'.
        01  WS-DATE-LETTRES       PIC X(40).
        01  WS-QTY-NUM              PIC S9(4)     VALUE 0.
        01  WS-PRICE-NUM            PIC S9(5)V99  VALUE 0.
+       01  WS-PRICE-TXT            PIC Z(5).99.
        01  WS-LINE-TOTAL-N         PIC S9(7)V99  VALUE 0.
        01  WS-LINE-TOTAL-TXT       PIC Z(7).99.
        01  WS-CAT-NUM            PIC S9(5)V99 VALUE 0.
@@ -77,6 +78,10 @@
        01 WS-TAX-PERCENT        PIC 99       VALUE 0.
        01 WS-TAX-PERCENT-TXT    PIC X(6).
        01 WS-TAX-PERCENT-EDIT    PIC ZZ9.9.
+       01 WS-DNAME-LEN  PIC 99.
+       01 WS-LNAME-LEN  PIC 99.
+       01 WS-FNAME-LEN  PIC 99.
+       01 WS-TRIM-INDEX PIC 99.
        PROCEDURE DIVISION.
        MAIN-SECTION.
            PERFORM INIT-PROGRAM
@@ -146,7 +151,7 @@
                  F-FNAME
                  F-COM-RATE
                  F-DESCRIPTION
-                 F-DISCOUNT-RATE
+                 F-PNO
                  F-QTY
                  F-PRICE-SOLD
                  F-PRICE-CATALOG
@@ -178,8 +183,8 @@
 
            MOVE ALL ' ' TO WS-LINE
            STRING
-              '                                      '
-              '________________________________________'
+              '                                       '
+              ' _______________________________'
               DELIMITED BY SIZE
               INTO WS-LINE
            END-STRING
@@ -232,8 +237,8 @@
 
            MOVE ALL ' ' TO WS-LINE
            STRING
-              '                                      '
-              '________________________________________'
+              '                                       '
+              ' _______________________________'
               DELIMITED BY SIZE
               INTO WS-LINE
            END-STRING
@@ -268,32 +273,68 @@
            MOVE ALL ' ' TO WS-LINE
            PERFORM ECRIRE-OUT-LIGNE
 
+           MOVE 20 TO WS-DNAME-LEN
+           MOVE 20 TO WS-TRIM-INDEX
+           PERFORM VARYING WS-TRIM-INDEX FROM 20 BY -1
+                   UNTIL WS-TRIM-INDEX = 0
+                      OR F-DNAME(WS-TRIM-INDEX:1) NOT = ' '
+           END-PERFORM
+           IF WS-TRIM-INDEX = 0
+              MOVE 0 TO WS-DNAME-LEN
+           ELSE
+              MOVE WS-TRIM-INDEX TO WS-DNAME-LEN
+           END-IF
+           MOVE 20 TO WS-LNAME-LEN
+           MOVE 20 TO WS-TRIM-INDEX
+           PERFORM VARYING WS-TRIM-INDEX FROM 20 BY -1
+                   UNTIL WS-TRIM-INDEX = 0
+                      OR F-LNAME(WS-TRIM-INDEX:1) NOT = ' '
+           END-PERFORM
+           IF WS-TRIM-INDEX = 0
+              MOVE 0 TO WS-LNAME-LEN
+           ELSE
+              MOVE WS-TRIM-INDEX TO WS-LNAME-LEN
+           END-IF
+           MOVE 20 TO WS-FNAME-LEN
+           MOVE 20 TO WS-TRIM-INDEX
+           PERFORM VARYING WS-TRIM-INDEX FROM 20 BY -1
+                   UNTIL WS-TRIM-INDEX = 0
+                      OR F-FNAME(WS-TRIM-INDEX:1) NOT = ' '
+           END-PERFORM
+           IF WS-TRIM-INDEX = 0
+              MOVE 0 TO WS-FNAME-LEN
+           ELSE
+              MOVE WS-TRIM-INDEX TO WS-FNAME-LEN
+           END-IF
            MOVE ALL ' ' TO WS-LINE
            STRING
               'Your contact within the department '
-              F-DNAME ' : ' F-LNAME ', ' F-FNAME
+              F-DNAME(1:WS-DNAME-LEN)
+              ' : '
+              F-LNAME(1:WS-LNAME-LEN)
+              ', '
+              F-FNAME(1:WS-FNAME-LEN)
               DELIMITED BY SIZE
               INTO WS-LINE
            END-STRING
            PERFORM ECRIRE-OUT-LIGNE
-
            MOVE ALL ' ' TO WS-LINE
            PERFORM ECRIRE-OUT-LIGNE
            MOVE ALL ' ' TO WS-LINE
            STRING
               '============================================='
-              '==========================='
+              '========================='
               DELIMITED BY SIZE
               INTO WS-LINE
            END-STRING
            PERFORM ECRIRE-OUT-LIGNE
            MOVE ALL ' ' TO WS-LINE
            STRING
-              '|P_NO  '
+              'P_NO  '
               '|DESCRIPTION                     '
               '|QUANT.'
               '|PRICE     '
-              '|LINE TOTAL  |'
+              '|LINE TOTAL  '
               DELIMITED BY SIZE
            INTO WS-LINE
            END-STRING
@@ -301,7 +342,7 @@
            MOVE ALL ' ' TO WS-LINE
            STRING
               '---------------------------------------------'
-              '---------------------------'
+              '-------------------------'
               DELIMITED BY SIZE
               INTO WS-LINE
            END-STRING
@@ -321,14 +362,17 @@
            COMPUTE WS-LINE-COMM-N = WS-LINE-TOTAL-N * WS-COM-RATE-NUM
            ADD WS-LINE-COMM-N TO WS-TOTAL-COMM-N
            MOVE WS-LINE-TOTAL-N TO WS-LINE-TOTAL-TXT
+           MOVE WS-PRICE-NUM    TO WS-PRICE-TXT
+           DISPLAY 'DEBUG PRICE: F-PRICE-SOLD = [' F-PRICE-SOLD ']'
+                   ' WS-PRICE-NUM = ' WS-PRICE-TXT.
            MOVE ALL ' ' TO WS-LINE
 
            STRING
-              '| ' '    '          ' | '
+              ' ' F-PNO              ' | '
               F-DESCRIPTION          ' | '
               F-QTY                  ' | '
-              F-PRICE-SOLD           ' | '
-              WS-LINE-TOTAL-TXT      ' |'
+              WS-PRICE-TXT           ' | '
+              WS-LINE-TOTAL-TXT      ' '
               DELIMITED BY SIZE
               INTO WS-LINE
            END-STRING
@@ -341,7 +385,7 @@
            MOVE ALL ' ' TO WS-LINE
            STRING
               '============================================='
-              '==========================='
+              '========================='
               DELIMITED BY SIZE
               INTO WS-LINE
            END-STRING
@@ -353,7 +397,7 @@
            MOVE WS-TOTAL-DISCOUNT-N TO WS-TOTAL-DISCOUNT-TXT
            MOVE ALL ' ' TO WS-LINE
            STRING
-              'DISCOUNT '
+              'DISCOUNT           '
               WS-TOTAL-DISCOUNT-TXT
               DELIMITED BY SIZE
            INTO WS-LINE
@@ -364,7 +408,7 @@
            MOVE WS-SUBTOTAL-N TO WS-SUBTOTAL-TXT
            MOVE ALL ' ' TO WS-LINE
            STRING
-              'SUB TOTAL '
+              'SUB TOTAL          '
               WS-SUBTOTAL-TXT
               DELIMITED BY SIZE
            INTO WS-LINE
@@ -378,9 +422,9 @@
            INSPECT WS-TAX-PERCENT-EDIT CONVERTING '.' TO ','
            MOVE ALL ' ' TO WS-LINE
            STRING
-           'SALES TAX ('
+           'SALES TAX  ('
            WS-TAX-PERCENT-EDIT
-           '%) '
+           '%)'
            WS-TAX-TXT
            DELIMITED BY SIZE
            INTO WS-LINE END-STRING
@@ -393,7 +437,7 @@
            STRING
            'COMMISSION ('
            WS-COM-PERCENT-EDIT
-           '%) '
+           '%)  '
            WS-TOTAL-COMM-TXT
            DELIMITED BY SIZE
            INTO WS-LINE
@@ -408,7 +452,7 @@
            MOVE WS-TOTAL-N TO WS-TOTAL-TXT
 
            MOVE ALL ' ' TO WS-LINE
-           STRING 'TOTAL ' WS-TOTAL-TXT
+           STRING 'TOTAL              ' WS-TOTAL-TXT
            DELIMITED BY SIZE
            INTO WS-LINE END-STRING
            PERFORM ECRIRE-OUT-LIGNE
@@ -418,8 +462,8 @@
 
            MOVE ALL ' ' TO WS-LINE
            STRING
-              '_____________________________________________'
-              '______________________________'
+              '____________________________________________'
+              '___________________________'
               DELIMITED BY SIZE
               INTO WS-LINE
            END-STRING
