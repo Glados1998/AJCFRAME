@@ -501,7 +501,7 @@
 
 
                 WHEN +100
-                   DISPLAY 'ERROR 100 : la donnée existe déja'
+                   DISPLAY 'ERROR 100 : la donnÃ©e existe dÃ©ja'
                    MOVE 'N' TO CONTINUEINSERT
 
                 WHEN -305
@@ -523,11 +523,11 @@
                    MOVE 'N' TO CONTINUEINSERT
 
                 WHEN -503
-                   DISPLAY 'ERROR -503 : Curseur déja ouvert '
+                   DISPLAY 'ERROR -503 : Curseur dÃ©ja ouvert '
                    PERFORM ABEND-PROG
 
                 WHEN -532
-                   DISPLAY 'ERROR -532 : Violation de clé étrangère'
+                   DISPLAY 'ERROR -532 : Violation de clÃ© Ã©trangÃ¨re'
                    MOVE 'N' TO CONTINUEINSERT
 
                 WHEN -803
@@ -578,11 +578,11 @@
                    MOVE 'N' TO CONTINUEINSERT
 
                 WHEN -503
-                   DISPLAY 'ERROR -503 : Curseur déja ouvert '
+                   DISPLAY 'ERROR -503 : Curseur dÃ©ja ouvert '
                    PERFORM ABEND-PROG
 
                 WHEN -532
-                   DISPLAY 'ERROR -532 : Violation de clé étrangère'
+                   DISPLAY 'ERROR -532 : Violation de clÃ© Ã©trangÃ¨re'
                    MOVE 'N' TO CONTINUEINSERT
 
                 WHEN -803
