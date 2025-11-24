@@ -97,6 +97,11 @@
                   FROM API3.PRODUCTS
             END-EXEC.
 
+            EXEC SQL
+             DECLARE CPRODUITS CURSOR FOR
+                SELECT PRICE,P_NO
+                  FROM API3.PRODUCTS
+            END-EXEC.
 
        77 FS-VENTESAS           PIC 99.
        77 FS-VENTESEU           PIC 99.
@@ -211,14 +216,19 @@
       *     05 QUANTITECOMMANDEEAS     PIC         9(2).
       *     05 RESERVEDAS              PIC         X(6).
              MOVE NCOMMANDEAS TO ORDERS-O-NO
+             MOVE NCOMMANDEAS TO ITEMS-O-NO
              MOVE NEMPLOYEAS  TO ORDERS-S-NO
-      *      DISPLAY "NCLIENTAS " NCLIENTAS
              MOVE NCLIENTAS TO ORDERS-C-NO
-      *      DISPLAY "ORDER-C-NO " ORDERS-C-NO
              MOVE QUANTITECOMMANDEEAS  TO ITEMS-QUANTITY
              MOVE PRIXAS TO ITEMS-PRICE
              MOVE NPRODUITAS TO IDPRODUITENCOURS
              MOVE NPRODUITAS TO ITEMS-P-NO
+
+             IF PRIXEU = ZERO
+
+                 PERFORM CHECKPRICE
+
+             END-IF
 
              STRING DATECOMMANDEAS(7:) DELIMITED BY SIZE,
                     '-' DELIMITED BY SIZE,
@@ -243,6 +253,8 @@
              END-EXEC
              PERFORM SQL-VERIFY
 
+             DISPLAY "ITEMS:" ITEMS-O-NO ";" ITEMS-P-NO
+             DISPLAY  ITEMS-QUANTITY ";" ITEMS-PRICE
              EXEC SQL
                 INSERT INTO API3.ITEMS VALUES
                 ( :ITEMS-O-NO,
@@ -277,15 +289,21 @@
                     AT END MOVE 'Y' TO WS-EOF-VENTESEU
             END-READ
       * AJOUT DES VENTES EN BASE
-            MOVE NCOMMANDEEU TO ORDERS-O-NO
-            MOVE NEMPLOYEEU  TO ORDERS-S-NO
-            MOVE NCLIENTEU TO ORDERS-C-NO
-            MOVE DATECOMMANDEEU TO ORDERS-O-DATE
-            MOVE NCOMMANDEEU TO ITEMS-O-NO
-            MOVE QUANTITECOMMANDEEEU  TO ITEMS-QUANTITY
-            MOVE PRIXEU TO ITEMS-PRICE
-            MOVE NPRODUITEU TO IDPRODUITENCOURS
-            MOVE NPRODUITEU TO ITEMS-P-NO
+
+             MOVE NCOMMANDEEU TO ORDERS-O-NO
+             MOVE NCOMMANDEEU TO ITEMS-O-NO
+             MOVE NEMPLOYEEU  TO ORDERS-S-NO
+             MOVE NCLIENTEU TO ORDERS-C-NO
+             MOVE QUANTITECOMMANDEEEU  TO ITEMS-QUANTITY
+             MOVE PRIXEU TO ITEMS-PRICE
+             MOVE NPRODUITEU TO IDPRODUITENCOURS
+             MOVE NPRODUITEU TO ITEMS-P-NO
+
+             IF PRIXEU = ZERO
+
+                 PERFORM CHECKPRICE
+
+             END-IF
 
             STRING DATECOMMANDEEU(7:) DELIMITED BY SIZE,
                    '-' DELIMITED BY SIZE,
@@ -384,7 +402,38 @@
                    CLOSE CSTOCKS
            END-EXEC.
 
+       CHECKPRICE.
+           EXEC SQL
+                   OPEN CPRODUITS
+           END-EXEC
 
+           PERFORM UNTIL SQLCODE NOT EQUAL ZERO
+
+               EXEC SQL
+                 FETCH CPRODUITS
+                     INTO :PRODUCTS-PRICE,
+                          :PRODUCTS-P-NO
+               END-EXEC
+
+               EVALUATE SQLCODE
+                    WHEN 0
+                       IF PRODUCTS-P-NO = IDPRODUITENCOURS
+                           MOVE PRODUCTS-PRICE TO ITEMS-PRICE
+                       END-IF
+
+                    WHEN 100
+                         CONTINUE
+
+                    WHEN OTHER
+                        DISPLAY "DB2 ERROR CPRODUITS:" SQLCODE
+
+               END-EVALUATE
+
+           END-PERFORM
+
+           EXEC SQL
+                   CLOSE CPRODUITS
+           END-EXEC.
 
 
        UPDATESTOCK.
@@ -466,7 +515,7 @@
                          CONTINUE
 
                     WHEN OTHER
-                        DISPLAY "DB2 ERROR:" SQLCODE
+                        DISPLAY "DB2 ERROR CBALANCE:" SQLCODE
 
                END-EVALUATE
 
@@ -618,4 +667,6 @@
        ABEND-PROG.
            DISPLAY 'ANOMALIE !!!'
            COMPUTE WS-ANO = 1 / WS-ANO.
+
+
 
