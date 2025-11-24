@@ -224,7 +224,7 @@
              MOVE NPRODUITAS TO IDPRODUITENCOURS
              MOVE NPRODUITAS TO ITEMS-P-NO
 
-             IF PRIXEU = ZERO
+             IF PRIXAS = ZERO
 
                  PERFORM CHECKPRICE
 
@@ -253,19 +253,20 @@
              END-EXEC
              PERFORM SQL-VERIFY
 
-             DISPLAY "ITEMS:" ITEMS-O-NO ";" ITEMS-P-NO
-             DISPLAY  ITEMS-QUANTITY ";" ITEMS-PRICE
-             EXEC SQL
+      ***    DISPLAY "ITEMS:" ITEMS-O-NO ";" ITEMS-P-NO
+      *****  DISPLAY  ITEMS-QUANTITY ";" ITEMS-PRICE
+             IF CONTINUEINSERT = 'Y'
+              EXEC SQL
                 INSERT INTO API3.ITEMS VALUES
                 ( :ITEMS-O-NO,
                   :ITEMS-P-NO,
                   :ITEMS-QUANTITY,
                   :ITEMS-PRICE
                 )
-             END-EXEC
-            PERFORM SQL-VERIFY
-            DISPLAY "INSERTION"
-
+              END-EXEC
+              PERFORM SQL-VERIFY
+              DISPLAY "INSERTION"
+             END-IF
 
       * AUGMENTATION SOLDE CLIENT
             IF CONTINUEINSERT = 'Y'
@@ -392,7 +393,7 @@
                          CONTINUE
 
                     WHEN OTHER
-                        DISPLAY "DB2 ERROR:" SQLCODE
+                        DISPLAY "DB2 ERROR CSTOCKS :" SQLCODE
 
                END-EVALUATE
 
@@ -407,6 +408,7 @@
                    OPEN CPRODUITS
            END-EXEC
 
+           DISPLAY "CHECKPRICE"
            PERFORM UNTIL SQLCODE NOT EQUAL ZERO
 
                EXEC SQL
@@ -417,8 +419,10 @@
 
                EVALUATE SQLCODE
                     WHEN 0
+      *                DISPLAY "0K; " PRODUCTS-P-NO ";" IDPRODUITENCOURS
                        IF PRODUCTS-P-NO = IDPRODUITENCOURS
                            MOVE PRODUCTS-PRICE TO ITEMS-PRICE
+                           DISPLAY "O" ITEMS-PRICE ";" IDPRODUITENCOURS
                        END-IF
 
                     WHEN 100
@@ -667,6 +671,8 @@
        ABEND-PROG.
            DISPLAY 'ANOMALIE !!!'
            COMPUTE WS-ANO = 1 / WS-ANO.
+
+
 
 
 
