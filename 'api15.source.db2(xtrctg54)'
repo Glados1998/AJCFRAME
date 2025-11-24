@@ -1,5 +1,5 @@
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. XTRCTG53.
+       PROGRAM-ID. XTRCTG54.
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
@@ -73,9 +73,16 @@
        01  WS-MSG                      PIC X(40).
        01  WS-EMPLO-COM-EDIT          PIC 9.99.
        01  IND-COM                    PIC S9(4) COMP VALUE 0.
+       01  WS-LOG-CMD                  PIC X.
+       01  WS-LOG-NOM                  PIC X(30).
+       01  WS-LOG-TXT                  PIC X(80).
 
        PROCEDURE DIVISION.
        LE-MAIN.
+           MOVE 'O' TO WS-LOG-CMD
+           MOVE SPACES TO WS-LOG-NOM WS-LOG-TXT
+           MOVE "YVES" TO WS-LOG-TXT
+           CALL 'LOGGERG5' USING WS-LOG-CMD WS-LOG-NOM WS-LOG-TXT
            OPEN OUTPUT ETAT
            PERFORM OPEN-CURSEUR-JOINTURE
            MOVE 0 TO SQLCODE
@@ -117,12 +124,33 @@
            MOVE 'CLOSE CURSEUR_JOINTURE' TO WS-MSG
            PERFORM TEST-SQLCODE
            CLOSE ETAT
+           MOVE 'F' TO WS-LOG-CMD
+           MOVE SPACES TO WS-LOG-NOM WS-LOG-TXT
+           MOVE "YVES" TO WS-LOG-TXT
+           CALL 'LOGGERG5' USING WS-LOG-CMD WS-LOG-NOM WS-LOG-TXT
            GOBACK
+           .
+       LOGNUONO.
+           MOVE ORDER-O-NO      TO NUM-COMMANDE-TEXTE
+           MOVE SPACES          TO WS-LOG-TXT
+           STRING
+              'YVES O_NO='              DELIMITED BY SIZE
+              NUM-COMMANDE-TEXTE   DELIMITED BY SIZE
+              INTO WS-LOG-TXT
+           END-STRING
+           MOVE 'L' TO WS-LOG-CMD
+           CALL 'LOGGERG5' USING WS-LOG-CMD WS-LOG-NOM WS-LOG-TXT
            .
        ABEND-PROG.
            EXEC SQL ROLLBACK END-EXEC
            MOVE SQLCODE TO ED-SQLCODE
            DISPLAY 'ABEND-PROG ROLLBACK ' ED-SQLCODE
+           MOVE 'ABEND-PROG'       TO WS-LOG-NOM
+           PERFORM LOGNUONO
+           MOVE 'F' TO WS-LOG-CMD
+           MOVE SPACES TO WS-LOG-NOM WS-LOG-TXT
+           MOVE "YVES" TO WS-LOG-TXT
+           CALL 'LOGGERG5' USING WS-LOG-CMD WS-LOG-NOM WS-LOG-TXT
            GOBACK
            .
        TEST-SQLCODE.
@@ -132,7 +160,11 @@
                  CONTINUE
               WHEN SQLCODE > ZERO
                  DISPLAY 'WARNING - ' WS-MSG ' : ' ED-SQLCODE
+                 MOVE 'SQL-WARNING' TO WS-LOG-NOM
+                 PERFORM LOGNUONO
               WHEN OTHER
+                 MOVE 'SQL-ERROR' TO WS-LOG-NOM
+                 PERFORM LOGNUONO
                  DISPLAY 'ANOMALIE - ' WS-MSG ' : ' ED-SQLCODE
                  PERFORM ABEND-PROG
            END-EVALUATE
@@ -146,55 +178,87 @@
            .
        TRAITER-VALEURS-NULL.
            IF IND-O-DATE < 0
+              MOVE 'ORDERS.O_DATE' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE SPACES TO DATE-COMMANDE-TEXTE
            END-IF
            IF IND-COMPANY < 0
+              MOVE 'CUSTOMERS.COMPANY' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE 0      TO CUSTO-COMPANY-LEN
               MOVE SPACES TO CUSTO-COMPANY-TEXT
            END-IF
            IF IND-ADDRESS < 0
+              MOVE 'CUSTO-ADDRESS' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE 0      TO CUSTO-ADDRESS-LEN
               MOVE SPACES TO CUSTO-ADDRESS-TEXT
            END-IF
            IF IND-CITY < 0
+              MOVE 'CUSTO-CITY' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE SPACES TO CUSTO-CITY
            END-IF
            IF IND-STATE < 0
+              MOVE 'CUSTO-STATE' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE SPACES TO CUSTO-STATE
            END-IF
            IF IND-ZIP < 0
+              MOVE 'CUSTO-ZIP' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE SPACES TO CUSTO-ZIP
            END-IF
            IF IND-PHONE < 0
+              MOVE 'CUSTO-PHONE' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE SPACES TO CUSTO-PHONE
            END-IF
            IF IND-DNAME < 0
+              MOVE 'CUSTO-DNAME' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE SPACES TO DEPTS-DNAME
            END-IF
            IF IND-LNAME < 0
+              MOVE 'CUSTO-LNAME' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE SPACES TO EMPLO-LNAME
            END-IF
            IF INDIC-FNAME < 0
+              MOVE 'CUSTO-FNAME' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE 0      TO EMPLO-FNAME-LEN
               MOVE SPACES TO EMPLO-FNAME-TEXT
            END-IF
            IF INDIC-PNO < 0
+              MOVE 'ITEMS-P-NO' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE SPACES TO ITEMS-P-NO
            END-IF
            IF INDIC-DESC < 0
+              MOVE 'PRODU-DESCRIPTION' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE 0      TO PRODU-DESCRIPTION-LEN
               MOVE SPACES TO PRODU-DESCRIPTION-TEXT
            END-IF
            IF INDIC-QTY < 0
+              MOVE 'ITEMS-QUANTITY' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE 0 TO ITEMS-QUANTITY
            END-IF
            IF INDITEMSPRICE < 0
+              MOVE 'ITEMS-PRICE' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE 0 TO ITEMS-PRICE
            END-IF
            IF INDPRODUPRICE < 0
+              MOVE 'PRODU-PRICE' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE 0 TO PRODU-PRICE
            END-IF
            IF IND-COM < 0
+              MOVE 'EMPLO-COM' TO WS-LOG-NOM
+              PERFORM LOGNUONO
               MOVE 0 TO EMPLO-COM
            END-IF
            .
@@ -240,7 +304,7 @@
                DELIMITED BY SIZE ';'
                PRODU-DESCRIPTION-TEXT  (1:PRODU-DESCRIPTION-LEN)
                DELIMITED BY SIZE  ';'
-               WS-EMPLO-COM-EDIT
+               ITEMS-P-NO
                DELIMITED BY SIZE ';'
                QUANTITE-TEXTE
                DELIMITED BY SIZE  ';'
@@ -253,5 +317,5 @@
 
 
        ECRIRE-LIGNE.
-           WRITE ENR-ETAT FROM L-EDITION.
+           WRITE ENR-ETAT FROM L-EDITION
            .
