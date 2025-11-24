@@ -78,6 +78,9 @@
        01 WS-TAX-PERCENT        PIC 99       VALUE 0.
        01 WS-TAX-PERCENT-TXT    PIC X(6).
        01 WS-TAX-PERCENT-EDIT    PIC ZZ9.9.
+       01  F-DNAME-TRIM   PIC X(20).
+       01  F-LNAME-TRIM   PIC X(20).
+       01  F-FNAME-TRIM   PIC X(20).
        01 WS-DNAME-LEN  PIC 99.
        01 WS-LNAME-LEN  PIC 99.
        01 WS-FNAME-LEN  PIC 99.
@@ -397,20 +400,20 @@
            MOVE WS-TOTAL-DISCOUNT-N TO WS-TOTAL-DISCOUNT-TXT
            MOVE ALL ' ' TO WS-LINE
            STRING
-              'DISCOUNT           '
-              WS-TOTAL-DISCOUNT-TXT
-              DELIMITED BY SIZE
+           'DISCOUNT           '
+           WS-TOTAL-DISCOUNT-TXT
+           DELIMITED BY SIZE
            INTO WS-LINE
            END-STRING
            PERFORM ECRIRE-OUT-LIGNE
 
-
+           COMPUTE WS-SUBTOTAL-N = WS-SUBTOTAL-N - WS-TOTAL-DISCOUNT-N
            MOVE WS-SUBTOTAL-N TO WS-SUBTOTAL-TXT
            MOVE ALL ' ' TO WS-LINE
            STRING
-              'SUB TOTAL          '
-              WS-SUBTOTAL-TXT
-              DELIMITED BY SIZE
+           'SUB TOTAL          '
+           WS-SUBTOTAL-TXT
+           DELIMITED BY SIZE
            INTO WS-LINE
            END-STRING
            PERFORM ECRIRE-OUT-LIGNE
@@ -446,9 +449,7 @@
 
            COMPUTE WS-TOTAL-N =
                    WS-SUBTOTAL-N
-                 - WS-TOTAL-DISCOUNT-N
                  + WS-TAX-NUM
-                 + WS-TOTAL-COMM-N
            MOVE WS-TOTAL-N TO WS-TOTAL-TXT
 
            MOVE ALL ' ' TO WS-LINE
