@@ -6,25 +6,25 @@
                                          555-1234
                                          _______________________________
 
- New York, Wednesday, November 19, 2025
+ New York, Monday, November 24, 2025
 
  O_NO   101
  O_DATE 2023-02-15
 
- Contact : dept. Sales                - Doe                 , John
+ Your contact within the department Sales : Doe, John
 
  ======================================================================
  P_NO  |DESCRIPTION                     |QUANT.|PRICE     |LINE TOTAL
  ----------------------------------------------------------------------
-       | Mouse Bluetooth                |   10 |  00025.9 |     259.00
-       | Router                         |   15 |  00035.7 |     535.50
+  P01  | Mouse Bluetooth                |   10 |    25.99 |     259.90
+  P03  | Router                         |   15 |    35.75 |     536.25
  ======================================================================
 
  DISCOUNT                    .00
- SUB TOTAL                794.50
- SALES TAX  ( 20,0%)      158.90
- COMMISSION (  5,0%)       39.72
- TOTAL                    993.12
+ SUB TOTAL                796.15
+ SALES TAX  ( 20,0%)      159.23
+ COMMISSION (  5,0%)       39.80
+ TOTAL                    955.38
 
  _______________________________________________________________________
 1
@@ -36,24 +36,24 @@
 
                                          _______________________________
 
- New York, Wednesday, November 19, 2025
+ New York, Monday, November 24, 2025
 
  O_NO   102
  O_DATE 2023-03-20
 
- Contact : dept. Marketing            - Smith               , Alice
+ Your contact within the department Marketing : Smith, Alice
 
  ======================================================================
  P_NO  |DESCRIPTION                     |QUANT.|PRICE     |LINE TOTAL
  ----------------------------------------------------------------------
-       | Router                         |   10 |  00035.7 |     357.00
+  P03  | Router                         |   10 |    35.75 |     357.50
  ======================================================================
 
  DISCOUNT                    .00
- SUB TOTAL                357.00
- SALES TAX  ( 20,0%)       71.40
- COMMISSION (  3,0%)       10.71
- TOTAL                    439.11
+ SUB TOTAL                357.50
+ SALES TAX  ( 20,0%)       71.50
+ COMMISSION (  3,0%)       10.72
+ TOTAL                    429.00
 
  _______________________________________________________________________
 1
@@ -65,24 +65,24 @@
 
                                          _______________________________
 
- New York, Wednesday, November 19, 2025
+ New York, Monday, November 24, 2025
 
  O_NO   103
  O_DATE 2024-02-25
 
- Contact : dept. Engineering          - Johnson             , David
+ Your contact within the department Engineering : Johnson, David
 
  ======================================================================
  P_NO  |DESCRIPTION                     |QUANT.|PRICE     |LINE TOTAL
  ----------------------------------------------------------------------
-       | External Hard Drive            |   10 |  00050.2 |     502.00
+  P05  | External Hard Drive            |   10 |    50.25 |     502.50
  ======================================================================
 
  DISCOUNT                    .00
- SUB TOTAL                502.00
- SALES TAX  ( 20,0%)      100.40
- COMMISSION (  2,0%)       10.04
- TOTAL                    612.44
+ SUB TOTAL                502.50
+ SALES TAX  ( 20,0%)      100.50
+ COMMISSION (  2,0%)       10.05
+ TOTAL                    603.00
 
  _______________________________________________________________________
 1
@@ -94,25 +94,25 @@
 
                                          _______________________________
 
- New York, Wednesday, November 19, 2025
+ New York, Monday, November 24, 2025
 
  O_NO   104
  O_DATE 2024-07-20
 
- Contact : dept. Sales                - Doe                 , John
+ Your contact within the department Sales : Doe, John
 
  ======================================================================
  P_NO  |DESCRIPTION                     |QUANT.|PRICE     |LINE TOTAL
  ----------------------------------------------------------------------
-       | Mouse Bluetooth                |   10 |  00025.9 |     259.00
-       | Battery                        |   15 |  00014.4 |     216.00
+  P01  | Mouse Bluetooth                |   10 |    25.99 |     259.90
+  P02  | Battery                        |   15 |    14.49 |     217.35
  ======================================================================
 
  DISCOUNT                  15.00
- SUB TOTAL                475.00
- SALES TAX  ( 20,0%)       95.00
- COMMISSION (  5,0%)       23.75
- TOTAL                    578.75
+ SUB TOTAL                462.25
+ SALES TAX  ( 20,0%)       92.45
+ COMMISSION (  5,0%)       23.85
+ TOTAL                    554.70
 
  _______________________________________________________________________
 1
@@ -124,26 +124,26 @@
                                          555-1234
                                          _______________________________
 
- New York, Wednesday, November 19, 2025
+ New York, Monday, November 24, 2025
 
  O_NO   105
  O_DATE 2025-05-15
 
- Contact : dept. Marketing            - Smith               , Alice
+ Your contact within the department Marketing : Smith, Alice
 
  ======================================================================
  P_NO  |DESCRIPTION                     |QUANT.|PRICE     |LINE TOTAL
  ----------------------------------------------------------------------
-       | Router                         |    5 |  00035.7 |     178.50
-       | External Hard Drive            |    5 |  00050.2 |     251.00
-       | USB Drive                      |   50 |  00008.2 |     410.00
+  P03  | Router                         |    5 |    35.75 |     178.75
+  P05  | External Hard Drive            |    5 |    50.25 |     251.25
+  P07  | USB Drive                      |   50 |     8.25 |     412.50
  ======================================================================
 
  DISCOUNT                 100.00
- SUB TOTAL                839.50
- SALES TAX  ( 20,0%)      167.90
- COMMISSION (  3,0%)       25.18
- TOTAL                    932.58
+ SUB TOTAL                742.50
+ SALES TAX  ( 20,0%)      148.50
+ COMMISSION (  3,0%)       25.26
+ TOTAL                    891.00
 
  _______________________________________________________________________
 1
@@ -155,24 +155,24 @@
                                          555-1234
                                          _______________________________
 
- New York, Wednesday, November 19, 2025
+ New York, Monday, November 24, 2025
 
  O_NO   106
  O_DATE 2025-06-23
 
- Contact : dept. Marketing            - Smith               , Alice
+ Your contact within the department Marketing : Smith, Alice
 
  ======================================================================
  P_NO  |DESCRIPTION                     |QUANT.|PRICE     |LINE TOTAL
  ----------------------------------------------------------------------
-       | Battery                        |    5 |  00015.4 |      77.00
-       | Keyboard                       |   50 |  00008.0 |     400.00
+  P02  | Battery                        |    5 |    15.49 |      77.45
+  P04  | Keyboard                       |   50 |     8.00 |     400.00
  ======================================================================
 
  DISCOUNT                 100.00
- SUB TOTAL                477.00
- SALES TAX  ( 20,0%)       95.40
- COMMISSION (  3,0%)       14.31
- TOTAL                    486.71
+ SUB TOTAL                377.45
+ SALES TAX  ( 20,0%)       75.49
+ COMMISSION (  3,0%)       14.32
+ TOTAL                    452.94
 
  _______________________________________________________________________
