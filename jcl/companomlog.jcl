@@ -1,0 +1,23 @@
+//ANOMLOG  JOB (ACCT#),'COMP ANOMLOG',MSGCLASS=H,CLASS=A,REGION=4M,
+//         MSGLEVEL=(1,1),NOTIFY=&SYSUID
+//*
+//*  Compile and link ANOMLOG standalone logging subprogram
+//*
+//         SET USERID=API4,NOMPGM=ANOMLOG
+//*
+//ANOMC    EXEC IGYWCL
+//COBOL.SYSLIB   DD DSN=&USERID..PROJET.COPYBOOK,DISP=SHR
+//COBOL.SYSIN    DD DSN=&USERID..PROJET.COBOL(&NOMPGM),DISP=SHR
+//LKED.SYSLMOD   DD DSN=&USERID..PROJET.LOAD(&NOMPGM),DISP=SHR
+//*
+//*  Usage Note:
+//*  
+//*
+//*
+//*   Ensure execution JCL allocates DDOUT2 to:&USERID..PROJET.JRN.DATA
+//*   Example DD:
+//*   //DDOUT2 DD DSN=&USERID..PROJET.JRN.DATA,
+//*   //         DISP=(MOD,CATLG,DELETE),
+//*   //         DCB=(RECFM=FB,LRECL=80,BLKSIZE=0),
+//*   //         SPACE=(TRK,(1,1),RLSE),UNIT=SYSDA
+//*

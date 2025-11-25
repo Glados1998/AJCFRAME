@@ -1,4 +1,4 @@
-       CBL DYNAM
+       CBL DYNAM, LIB  
        IDENTIFICATION DIVISION.
        PROGRAM-ID. MAINDRV.
       *****************************************************************
@@ -7,8 +7,6 @@
       * PURPOSE: Receives PARM to select subprogram, dynamically      *
       *          calls it, collects results, writes to output files   *
       *                                                               *
-      * INPUT:   PARM from JCL (SUBPROCA/SUBPROCB/SUBPROCC)           *
-      * OUTPUT:  DDOUT1 (stats), DDOUT2 (journal with timestamp)      *
       * CALLED:  Subprograms via dynamic CALL (CBL DYNAM)             *
       *                                                               *
       * RETURN CODES: 0=success, 4=invalid PARM, 8=error              *
@@ -17,40 +15,35 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT STATS-FILE ASSIGN TO DDOUT1
-               ORGANIZATION IS SEQUENTIAL
-               FILE STATUS IS WS-STATS-STATUS.
-           SELECT JOURNAL-FILE ASSIGN TO DDOUT2
-               ORGANIZATION IS SEQUENTIAL
-               FILE STATUS IS WS-JOURNAL-STATUS.
+      * No local file usage; logging delegated to ANOMLOG
        
        DATA DIVISION.
        FILE SECTION.
-       FD  STATS-FILE
-           RECORDING MODE IS F
-           RECORD CONTAINS 80 CHARACTERS.
-       01  STATS-RECORD         PIC X(80).
-       
-       FD  JOURNAL-FILE
-           RECORDING MODE IS F
-           RECORD CONTAINS 80 CHARACTERS.
-       01  JOURNAL-RECORD       PIC X(80).
+      * Removed local journal FD; ANOMLOG manages DDOUT2
        
        WORKING-STORAGE SECTION.
-       01  WS-PARM              PIC X(8).     *> Normalized subprog name
-       01  WS-RESULT            PIC X(100).   *> Result from subprog
-       01  WS-STATS-STATUS      PIC XX.       *> File status DDOUT1
-       01  WS-JOURNAL-STATUS    PIC XX.       *> File status DDOUT2
-       01  WS-TIMESTAMP         PIC X(26).    *> Execution timestamp
+       01  WS-PARM              PIC X(8).     
+       01  WS-RESULT            PIC X(100).   
+       01  WS-TIMESTAMP         PIC X(26).    
        01  WS-RETURN-CODE       PIC 9(4) VALUE 0.
-       01  WS-INDEX             PIC 9  VALUE 1. *> Loop counter
-       01  WS-LEN               PIC 9  VALUE 0. *> String length
-       01  WS-PARM-TRIMMED      PIC X(8).       *> Temp for trimming
+       01  WS-INDEX             PIC 9  VALUE 1. 
+       01  WS-LEN               PIC 9  VALUE 0. 
+       01  WS-PARM-TRIMMED      PIC X(8).
+       01  WS-CURRENT-DATE.
+           05  WS-YEAR          PIC 9(4).
+           05  WS-MONTH         PIC 9(2).
+           05  WS-DAY           PIC 9(2).
+       01  WS-CURRENT-TIME.
+           05  WS-HOUR          PIC 9(2).
+           05  WS-MINUTE        PIC 9(2).
+           05  WS-SECOND        PIC 9(2).
 
+       COPY ANOMLOG.
+       
        LINKAGE SECTION.
-       01  LS-PARM-BLOCK.                       *> JCL PARM structure
-           05  LS-PARM-LEN   PIC S9(4) COMP.    *> Length of PARM
-           05  LS-PARM-TEXT  PIC X(100).        *> PARM text
+       01  LS-PARM-BLOCK.                       
+           05  LS-PARM-LEN   PIC S9(4) COMP.    
+           05  LS-PARM-TEXT  PIC X(100).        
        
        PROCEDURE DIVISION USING LS-PARM-BLOCK.
        
@@ -62,26 +55,12 @@
            IF LS-PARM-LEN > 0
               MOVE LS-PARM-TEXT(1:LS-PARM-LEN) TO WS-PARM
            ELSE
-              MOVE 'SUBPROCA' TO WS-PARM        *> Default if no PARM
-           END-IF.
-           
-      *--- Open output files for append -----------------------------*
-           OPEN EXTEND JOURNAL-FILE.
-           IF WS-JOURNAL-STATUS NOT = '00'
-               DISPLAY 'ERROR OPENING JOURNAL: ' WS-JOURNAL-STATUS
-               MOVE 8 TO RETURN-CODE
-               GOBACK
-           END-IF.
-           
-           OPEN EXTEND STATS-FILE.
-           IF WS-STATS-STATUS NOT = '00'
-               DISPLAY 'ERROR OPENING STATS: ' WS-STATS-STATUS
-               CLOSE JOURNAL-FILE
-               MOVE 8 TO RETURN-CODE
-               GOBACK
+              MOVE 'SUBPROCA' TO WS-PARM        
            END-IF.
 
       *--- Normalize PARM: trim spaces, upper-case ------------------*
+      *    Trim spaces and remove quotes if any are present          *
+      *    replaces the TRIM function which dosent work              *
            INSPECT WS-PARM REPLACING ALL '''' BY SPACE
 
       *    Remove leading spaces
@@ -106,54 +85,79 @@
 
            MOVE FUNCTION UPPER-CASE(WS-PARM-TRIMMED) TO WS-PARM
            
+      *--- Display execution header at top --------------------------*
+           ACCEPT WS-CURRENT-DATE FROM DATE YYYYMMDD
+           ACCEPT WS-CURRENT-TIME FROM TIME
+           DISPLAY ' '
+           DISPLAY ' '
+           DISPLAY '=================================================='
+           DISPLAY 'MAINDRV Execution Started'
+           DISPLAY '=================================================='
+           DISPLAY 'Date       : ' WS-YEAR '/' WS-MONTH '/' WS-DAY
+           DISPLAY 'Time       : ' WS-HOUR ':' WS-MINUTE ':' WS-SECOND
+           DISPLAY 'Subprogram : ' WS-PARM
+           DISPLAY '=================================================='
+           DISPLAY ' '.
+           
       *--- Dynamic CALL to selected subprogram ----------------------*
            EVALUATE WS-PARM
                WHEN 'SUBPROCA'
                    CALL 'SUBPROCA' USING WS-RESULT
                        ON EXCEPTION
-                           MOVE 'ERROR: SUBPROCA not found' TO WS-RESULT
-                           MOVE 8 TO WS-RETURN-CODE
+                        MOVE 'ERROR: SUBPROCA not found' TO WS-RESULT
+                        MOVE 8 TO WS-RETURN-CODE
+                        MOVE 'ANOMALY' TO AL-MESSAGE-TYPE
+                        MOVE WS-PARM   TO AL-PROGRAM-NAME
+                        MOVE WS-RETURN-CODE TO AL-RETURN-CODE
+                        MOVE WS-RESULT TO AL-DESCRIPTION
+                        CALL 'ANOMLOG' USING ANOMLOG-PARM-BLOCK END-CALL
                    END-CALL
                WHEN 'SUBPROCB'
                    CALL 'SUBPROCB' USING WS-RESULT
                        ON EXCEPTION
-                           MOVE 'ERROR: SUBPROCB not found' TO WS-RESULT
-                           MOVE 8 TO WS-RETURN-CODE
+                        MOVE 'ERROR: SUBPROCB not found' TO WS-RESULT
+                        MOVE 8 TO WS-RETURN-CODE
+                        MOVE 'ANOMALY' TO AL-MESSAGE-TYPE
+                        MOVE WS-PARM   TO AL-PROGRAM-NAME
+                        MOVE WS-RETURN-CODE TO AL-RETURN-CODE
+                        MOVE WS-RESULT TO AL-DESCRIPTION
+                        CALL 'ANOMLOG' USING ANOMLOG-PARM-BLOCK END-CALL
                    END-CALL
                WHEN 'SUBPROCC'
                    CALL 'SUBPROCC' USING WS-RESULT
                        ON EXCEPTION
-                           MOVE 'ERROR: SUBPROCC not found' TO WS-RESULT
-                           MOVE 8 TO WS-RETURN-CODE
+                        MOVE 'ERROR: SUBPROCC not found' TO WS-RESULT
+                        MOVE 8 TO WS-RETURN-CODE
+                        MOVE 'ANOMALY' TO AL-MESSAGE-TYPE                         
+                        MOVE WS-PARM   TO AL-PROGRAM-NAME
+                        MOVE WS-RETURN-CODE TO AL-RETURN-CODE
+                        MOVE WS-RESULT TO AL-DESCRIPTION
+                        CALL 'ANOMLOG' USING ANOMLOG-PARM-BLOCK END-CALL
                    END-CALL
                WHEN OTHER
                    MOVE 'Invalid subproc Specified' TO WS-RESULT
-                   MOVE 4 TO WS-RETURN-CODE
-           END-EVALUATE.
+                   MOVE 8 TO WS-RETURN-CODE
+                   MOVE 'ANOMALY' TO AL-MESSAGE-TYPE
+                   MOVE WS-PARM   TO AL-PROGRAM-NAME
+                   MOVE WS-RETURN-CODE TO AL-RETURN-CODE
+                   MOVE WS-RESULT TO AL-DESCRIPTION
+                   CALL 'ANOMLOG' USING ANOMLOG-PARM-BLOCK
+               END-EVALUATE.
            
-      *--- Write timestamped journal entry --------------------------*
-           ACCEPT WS-TIMESTAMP FROM TIME.
-           STRING WS-TIMESTAMP ' | Task: ' WS-PARM 
-                  ' | Result: ' WS-RESULT 
-                  DELIMITED BY SIZE INTO JOURNAL-RECORD.
-           WRITE JOURNAL-RECORD.
-           IF WS-JOURNAL-STATUS NOT = '00'
-               DISPLAY 'ERROR WRITING JOURNAL: ' WS-JOURNAL-STATUS
-               MOVE 8 TO WS-RETURN-CODE
-           END-IF.
-           
-      *--- Write statistics (subprogram result) ---------------------*
-           MOVE WS-RESULT TO STATS-RECORD.
-           WRITE STATS-RECORD.
-           IF WS-STATS-STATUS NOT = '00'
-               DISPLAY 'ERROR WRITING STATS: ' WS-STATS-STATUS
-               MOVE 8 TO WS-RETURN-CODE
-           END-IF.
+      *--- Display completion footer --------------------------------*
+           DISPLAY ' '
+           DISPLAY '=================================================='
+           IF WS-RETURN-CODE > 0
+               DISPLAY '*** EXECUTION FAILED ***'
+           ELSE
+               DISPLAY '*** EXECUTION SUCCESSFUL ***'
+           END-IF
+           DISPLAY 'Result     : ' WS-RESULT
+           DISPLAY 'Return Code: ' WS-RETURN-CODE
+           DISPLAY '=================================================='
+           DISPLAY ' '
+           DISPLAY ' '
            
       *--- Cleanup and exit -----------------------------------------*
-           CLOSE STATS-FILE.
-           CLOSE JOURNAL-FILE.
-           
-           DISPLAY 'Processing complete: ' WS-RESULT.
-           MOVE WS-RETURN-CODE TO RETURN-CODE.
+           MOVE WS-RETURN-CODE TO RETURN-CODE
            STOP RUN.

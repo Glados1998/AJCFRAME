@@ -1,8 +1,8 @@
        IDENTIFICATION DIVISION.
        PROGRAM-ID. SUBPROCB.
       *****************************************************************
-      * SUBPROCB - Aggregate sales by city from CUSTOMERS/ORDERS     *
-      * Calculates total sales amount per city                       *
+      * SUBPROCB - Aggregate sales by city from CUSTOMERS/ORDERS      *
+      * Calculates total sales amount per city                        *
       *****************************************************************
        
        ENVIRONMENT DIVISION.
@@ -41,12 +41,14 @@
        
       *    CURSOR: Aggregate sales by city
            EXEC SQL
-               DECLARE CITYAGG CURSOR FOR
+               DECLARE CITYAGG CURSOR FOR 
                SELECT C.CITY,
-                      SUM(I.QUANTITY * I.PRICE) AS TOTAL_SALES
+                      COALESCE(SUM(COALESCE(I.QUANTITY,0)
+                      * COALESCE(I.PRICE,0)),
+                      DECIMAL(0,2)) AS TOTAL_SALES
                FROM API4.CUSTOMERS C
-               INNER JOIN API4.ORDERS O ON O.C_NO = C.C_NO
-               INNER JOIN API4.ITEMS I ON I.O_NO = O.O_NO
+               LEFT JOIN API4.ORDERS O ON O.C_NO = C.C_NO
+               LEFT JOIN API4.ITEMS I ON I.O_NO = O.O_NO
                GROUP BY C.CITY
                ORDER BY C.CITY
            END-EXEC.
@@ -71,16 +73,16 @@
            END-IF.
 
       *--- Display table header -------------------------------------*
-           DISPLAY '**********************************'.
-           DISPLAY '* City Name          | Sales     *'.
-           DISPLAY '**********************************'.
+           DISPLAY '*******************************************'.
+           DISPLAY '* City               | Sales              *'.
+           DISPLAY '*******************************************'.
        
       *--- Fetch and display aggregated data ------------------------*
            PERFORM UNTIL SQLCODE NOT = 0
                EXEC SQL
-                   FETCH CITYAGG
-                   INTO :HV-CITY,
-                        :HV-TOTAL-SALES
+                   FETCH CITYAGG 
+                   INTO :HV-CITY, 
+                        :HV-TOTAL-SALES 
                END-EXEC
                
                IF SQLCODE = 0
@@ -108,22 +110,23 @@
            END-PERFORM.
        
       *--- Display grand total --------------------------------------*
-           DISPLAY '**********************************'.
+           DISPLAY '*******************************************'.
            MOVE WS-GRAND-TOTAL TO ED-GRAND-TOTAL.
-           STRING '* Total          : $ ' DELIMITED BY SIZE
+           MOVE SPACES TO WS-DISPLAY-LINE.
+           STRING '* Total             : $ ' DELIMITED BY SIZE
                   ED-GRAND-TOTAL DELIMITED BY SIZE
                   ' *' DELIMITED BY SIZE
                   INTO WS-DISPLAY-LINE
            END-STRING.
            DISPLAY WS-DISPLAY-LINE.
-           DISPLAY '**********************************'.
+           DISPLAY '*******************************************'.
 
       *--- Close cursor ---------------------------------------------*
            EXEC SQL
                CLOSE CITYAGG
            END-EXEC.
 
-      *--- Return summary to caller ---------------------------------*
+      *--- Return summary to MAINDRV ----------------------------*
            STRING 'SUBPROCB: Sales aggregation complete - '
                   WS-CITY-COUNT ' cities processed'
                   DELIMITED BY SIZE INTO LS-RESULT-BUFFER
