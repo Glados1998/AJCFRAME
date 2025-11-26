@@ -10,10 +10,7 @@
 //COBOL.SYSIN    DD DSN=&USERID..PROJET.COBOL(&NOMPGM),DISP=SHR
 //LKED.SYSLMOD   DD DSN=&USERID..PROJET.LOAD(&NOMPGM),DISP=SHR
 //*
-//*  Usage Note:
-//*  
-//*
-//*
+//*  Usage Notes:
 //*   Ensure execution JCL allocates DDOUT2 to:&USERID..PROJET.JRN.DATA
 //*   Example DD:
 //*   //DDOUT2 DD DSN=&USERID..PROJET.JRN.DATA,

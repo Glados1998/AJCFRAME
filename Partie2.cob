@@ -88,19 +88,19 @@
             EXEC SQL
              DECLARE CBALANCE CURSOR FOR
                 SELECT BALANCE,C_NO
-                  FROM API3.CUSTOMERS
+                  FROM API4.CUSTOMERS
             END-EXEC.
 
             EXEC SQL
              DECLARE CSTOCKS CURSOR FOR
                 SELECT stock,P_NO
-                  FROM API3.PRODUCTS
+                  FROM API4.PRODUCTS
             END-EXEC.
 
             EXEC SQL
              DECLARE CPRODUITS CURSOR FOR
                 SELECT PRICE,P_NO
-                  FROM API3.PRODUCTS
+                  FROM API4.PRODUCTS
             END-EXEC.
 
        77 FS-VENTESAS           PIC 99.
@@ -244,7 +244,7 @@
              DISPLAY NCLIENTAS ';' NPRODUITAS ';' PRIXAS
              DISPLAY NEMPLOYEAS ';' QUANTITECOMMANDEEAS
              EXEC SQL
-                INSERT INTO API3.ORDERS VALUES
+                INSERT INTO API4.ORDERS VALUES
                 ( :ORDERS-O-NO,
                   :ORDERS-S-NO,
                   :ORDERS-C-NO,
@@ -257,7 +257,7 @@
       *****  DISPLAY  ITEMS-QUANTITY ";" ITEMS-PRICE
              IF CONTINUEINSERT = 'Y'
               EXEC SQL
-                INSERT INTO API3.ITEMS VALUES
+                INSERT INTO API4.ITEMS VALUES
                 ( :ITEMS-O-NO,
                   :ITEMS-P-NO,
                   :ITEMS-QUANTITY,
@@ -321,7 +321,7 @@
             DISPLAY QUANTITECOMMANDEEEU ';' NEMPLOYEEU
             IF CONTINUEINSERT = 'Y'
              EXEC SQL
-                INSERT INTO API3.ORDERS VALUES
+                INSERT INTO API4.ORDERS VALUES
                 ( :ORDERS-O-NO,
                   :ORDERS-S-NO,
                   :ORDERS-C-NO,
@@ -335,7 +335,7 @@
 
             IF CONTINUEINSERT = 'Y'
                  EXEC SQL
-                    INSERT INTO API3.ITEMS VALUES
+                    INSERT INTO API4.ITEMS VALUES
                     ( :ITEMS-O-NO,
                       :ITEMS-P-NO,
                       :ITEMS-QUANTITY,
@@ -364,7 +364,7 @@
       *    EXEC SQL
       *       SELECT stock
       *          into :PRODUCTS-STOCK
-      *       FROM API3.PRODUCTS
+      *       FROM API4.PRODUCTS
       *       WHERE PNO = IDPRODUITSTOCKS
       *    END-EXEC
       *      PERFORM SQL-VERIFY
@@ -450,7 +450,7 @@
            MOVE STOCKPRODUITENCOURS TO PRODUCTS-STOCK
 
             EXEC SQL
-               UPDATE API3.PRODUCTS
+               UPDATE API4.PRODUCTS
                SET STOCK = :PRODUCTS-STOCK
                WHERE P_NO =  :PRODUCTS-P-NO
             END-EXEC.
@@ -493,7 +493,7 @@
       *    EXEC SQL
       *       SELECT balance
       *          into :CUST-BALANCE
-      *       FROM API3.CUSTOMERS
+      *       FROM API4.CUSTOMERS
       *       WHERE CNO = :ORDERS-C-NO
       *    END-EXEC
            EXEC SQL
@@ -542,7 +542,7 @@
            DISPLAY 'CLIENT : ' IDCLIENTMAJSOLDE
            MOVE IDCLIENTMAJSOLDE TO CUST-C-NO
             EXEC SQL
-               UPDATE API3.CUSTOMERS
+               UPDATE API4.CUSTOMERS
                SET BALANCE = :CUST-BALANCE
                WHERE C_NO =  :CUST-C-NO
             END-EXEC

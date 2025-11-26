@@ -32,7 +32,7 @@
       *  AL-DESCRIPTION  : Free-form description (truncated to fit)   *
       *                                                               *
       * LOG FORMAT: (80 chars fixed-length)                           *
-      *  YYYY-MM-DD HH:MM:SS | TYPE | PROGNAME | RC=nnnn | Desc...   *
+      *  YYYY-MM-DD HH:MM:SS | TYPE | PROGNAME | RC=nnnn | Desc...    *
       *                                                               *
       *****************************************************************
        ENVIRONMENT DIVISION.
