@@ -6,7 +6,7 @@
                                          555-1234
                                          _______________________________
 
- New York, Monday, November 24, 2025
+ New York, Wednesday, November 26, 2025
 
  O_NO   101
  O_DATE 2023-02-15
@@ -36,7 +36,7 @@
 
                                          _______________________________
 
- New York, Monday, November 24, 2025
+ New York, Wednesday, November 26, 2025
 
  O_NO   102
  O_DATE 2023-03-20
@@ -65,7 +65,7 @@
 
                                          _______________________________
 
- New York, Monday, November 24, 2025
+ New York, Wednesday, November 26, 2025
 
  O_NO   103
  O_DATE 2024-02-25
@@ -94,7 +94,7 @@
 
                                          _______________________________
 
- New York, Monday, November 24, 2025
+ New York, Wednesday, November 26, 2025
 
  O_NO   104
  O_DATE 2024-07-20
@@ -124,7 +124,7 @@
                                          555-1234
                                          _______________________________
 
- New York, Monday, November 24, 2025
+ New York, Wednesday, November 26, 2025
 
  O_NO   105
  O_DATE 2025-05-15
@@ -155,7 +155,7 @@
                                          555-1234
                                          _______________________________
 
- New York, Monday, November 24, 2025
+ New York, Wednesday, November 26, 2025
 
  O_NO   106
  O_DATE 2025-06-23
@@ -174,5 +174,179 @@
  SALES TAX  ( 20,0%)       75.49
  COMMISSION (  3,0%)       14.32
  TOTAL                    452.94
+
+ _______________________________________________________________________
+1
+                                         _______________________________
+                                         PQR Industries
+
+                                         Houston             , 77002
+                                         TX
+                                         555-3456
+                                         _______________________________
+
+ New York, Wednesday, November 26, 2025
+
+ O_NO   500
+ O_DATE 2022-10-10
+
+ Your contact within the department Sales : Doe, John
+
+ ======================================================================
+ P_NO  |DESCRIPTION                     |QUANT.|PRICE     |LINE TOTAL
+ ----------------------------------------------------------------------
+  P01  | Mouse Bluetooth                |    3 |    20.00 |      60.00
+ ======================================================================
+
+ DISCOUNT                  17.97
+ SUB TOTAL                 42.03
+ SALES TAX  ( 20,0%)        8.40
+ COMMISSION (  5,0%)        3.00
+ TOTAL                     50.43
+
+ _______________________________________________________________________
+1
+                                         _______________________________
+                                         LMN Enterprises
+                                         789 Oak Avenue
+                                         Chicago             , 60601
+                                         IL
+
+                                         _______________________________
+
+ New York, Wednesday, November 26, 2025
+
+ O_NO   501
+ O_DATE 2022-10-15
+
+ Your contact within the department Marketing : Smith, Alice
+
+ ======================================================================
+ P_NO  |DESCRIPTION                     |QUANT.|PRICE     |LINE TOTAL
+ ----------------------------------------------------------------------
+  P02  | Battery                        |   10 |    15.49 |     154.90
+ ======================================================================
+
+ DISCOUNT                    .00
+ SUB TOTAL                154.90
+ SALES TAX  ( 20,0%)       30.98
+ COMMISSION (  3,0%)        4.64
+ TOTAL                    185.88
+
+ _______________________________________________________________________
+1
+                                         _______________________________
+                                         XYZ Corporation
+                                         456 Elm Street
+                                         Los Angeles         , 90001
+                                         CA
+
+                                         _______________________________
+
+ New York, Wednesday, November 26, 2025
+
+ O_NO   502
+ O_DATE 2022-11-02
+
+ Your contact within the department Engineering : Johnson, David
+
+ ======================================================================
+ P_NO  |DESCRIPTION                     |QUANT.|PRICE     |LINE TOTAL
+ ----------------------------------------------------------------------
+  P05  | External Hard Drive            |    7 |    50.25 |     351.75
+ ======================================================================
+
+ DISCOUNT                    .00
+ SUB TOTAL                351.75
+ SALES TAX  ( 20,0%)       70.35
+ COMMISSION (  2,0%)        7.03
+ TOTAL                    422.10
+
+ _______________________________________________________________________
+1
+                                         _______________________________
+                                         ABC Company
+                                         123 Main Street
+                                         New York            , 10001
+                                         NY
+                                         555-1234
+                                         _______________________________
+
+ New York, Wednesday, November 26, 2025
+
+ O_NO   503
+ O_DATE 2022-11-05
+
+ Your contact within the department Marketing : Brown, Michael
+
+ ======================================================================
+ P_NO  |DESCRIPTION                     |QUANT.|PRICE     |LINE TOTAL
+ ----------------------------------------------------------------------
+  P15  | motherboard                    |   10 |    69.60 |     696.00
+ ======================================================================
+
+ DISCOUNT                    .00
+ SUB TOTAL                696.00
+ SALES TAX  ( 20,0%)      139.20
+ COMMISSION (  6,0%)       41.76
+ TOTAL                    835.20
+
+ _______________________________________________________________________
+1
+                                         _______________________________
+                                         LMN Enterprises
+                                         789 Oak Avenue
+                                         Chicago             , 60601
+                                         IL
+
+                                         _______________________________
+
+ New York, Wednesday, November 26, 2025
+
+ O_NO   504
+ O_DATE 2022-11-07
+
+ Your contact within the department Sales : Williams, Mary
+
+ ======================================================================
+ P_NO  |DESCRIPTION                     |QUANT.|PRICE     |LINE TOTAL
+ ----------------------------------------------------------------------
+  P14  | laptop                         |    1 |   125.99 |     125.99
+ ======================================================================
+
+ DISCOUNT                    .00
+ SUB TOTAL                125.99
+ SALES TAX  ( 20,0%)       25.19
+ COMMISSION (  4,0%)        5.03
+ TOTAL                    151.18
+
+ _______________________________________________________________________
+1
+                                         _______________________________
+                                         PQR Industries
+
+                                         Houston             , 77002
+                                         TX
+                                         555-3456
+                                         _______________________________
+
+ New York, Wednesday, November 26, 2025
+
+ O_NO   505
+ O_DATE 2022-11-17
+
+ Your contact within the department Sales : Williams, Mary
+
+ ======================================================================
+ P_NO  |DESCRIPTION                     |QUANT.|PRICE     |LINE TOTAL
+ ----------------------------------------------------------------------
+  P10  | usb Flash Drive                |    1 |    17.40 |      17.40
+ ======================================================================
+
+ DISCOUNT                    .00
+ SUB TOTAL                 17.40
+ SALES TAX  ( 20,0%)        3.48
+ COMMISSION (  4,0%)         .69
+ TOTAL                     20.88
 
  _______________________________________________________________________
