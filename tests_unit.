@@ -1,0 +1,45 @@
+CCODICNV     compilateur de codiconv
+CODICONV sous-programme de conversion des champs numériques
+convertir texte d’un fichier CSV (quantité, taux de commission, prix de vente, prix catalogue) en valeurs numériques
+LINKAGE SECTION : les champs bruts (X(...)) et retourne leurs équivalents numériques (S9…V99)
+DECIMAL-POINT IS COMMA 
+conversion via FUNCTION NUMVAL uniquement lorsque le champ n’est pas vide
+sous-programme appelé depuis (CODICTST, CODISTIL)
+
+CMPASSEQ	compiler asseq   
+ASSEQ : sous-programme évaluation tests unitaires
+ASSEQ validation des tests, “SOMTEST”. 
+quatre paramètres : le contexte global de test (TEST-CONTEXT), le nom du test (TEST-NAME), la valeur attendue (EXPECTED) et la valeur calculée (ACTUAL)
+
+CMPCOTST   	compiler codictst
+CODICTST : prog. principal tests unitaires pour CODICONV
+CODICTST tests unitaires à partir de CODICONV
+= SOMTEST : SPECIAL-NAMES DECIMAL-POINT IS COMMA, paragraphes de test (T-QTY-NORMAL-TEST, T-COM-NORMAL-TEST, T-PRICE-NORMAL-TEST, etc.), PROCEDURE DIVISION USING TEST-CONTEXT
+paragraphe = cas d’essai, appelle CODICONV, puis déclenche évaluation : CALL 'ASSEQ'
+programme affiche après chaque bloc le nombre total de tests exécutés, le nombre de réussites et d’échecs : vérifier CODICONV
+EXECOTST 	executer codictst
+
+les quatre pgms = (SOM / SOMTEST)
+CODICONV convertit des champs texte en valeurs numériques, dans le programme principal CODISTIL
+CODICTST exécute tests (valeurs normales, espaces, virgules décimales, conversions prix/quantités/commissions)
+validations : ASSEQ, comparaisons et résultats
+EXECOTST exécution pour lancer tests
+
+api15 ...PARTIE2   compiler projet2
+ 
+api15 ...PARTIE1    compiler projet1
+
+CREASEQ    	créer ps
+p1, p2: création ps
+
+SEQKSDS		  API15.PROJET.NEWPRODS.CHNG.INPUT -> API15.PROJET.NEWPRODS.CHNG.KSDS
+p1, p2 : de ps à ksds
+
+COMPSSPG   
+
+CREAJC   	  API15.PROJET.NEWPRODS.CHNG.INPUT -> API15.PROJET.NEWPRODS.CHNG.KSDS
+p1, p2
+
+JXTRCT55	  compiler + exécuter xtrct55   
+JLOGGER5   	compiler logger5
+EXEPSKSF   	obsolète/non fonctionnel
