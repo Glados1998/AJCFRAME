@@ -68,5 +68,5 @@
 //* -- Set the subprogram to be called here --------------*
 //SYSTSIN  DD  *
   DSN SYSTEM (DSN1)
-  RUN PROGRAM(MAINDRV) PLAN(MAINDRV) PARM('SUBPROCB')
+  RUN PROGRAM(MAINDRV) PLAN(MAINDRV) PARM('SUBPROCB,API4')
 /*
