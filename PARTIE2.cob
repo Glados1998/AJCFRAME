@@ -708,7 +708,7 @@
                    DISPLAY 'ERROR -502 : Curseur non ouvert'
                    MOVE 'ANOMALY' TO AL-MESSAGE-TYPE
                    MOVE 12 TO AL-RETURN-CODE
-                   MOVE 'ERROR -502 ' TO AL-DESCRIPTION                 ION
+                   MOVE 'ERROR -502 ' TO AL-DESCRIPTION                 
                    CALL 'ANOMLOG' USING ANOMLOG-PARM-BLOCK END-CALL
                    PERFORM ABEND-PROG
                    MOVE 'N' TO CONTINUEINSERT
@@ -717,7 +717,7 @@
                    DISPLAY 'ERROR -503 : Curseur déja ouvert '
                    MOVE 'ANOMALY' TO AL-MESSAGE-TYPE
                    MOVE 12 TO AL-RETURN-CODE
-                   MOVE 'ERROR -503 : ' TO AL-DESCRIPTION               PTION
+                   MOVE 'ERROR -503 : ' TO AL-DESCRIPTION               
                    CALL 'ANOMLOG' USING ANOMLOG-PARM-BLOCK END-CALL
                    PERFORM ABEND-PROG
 
@@ -742,17 +742,17 @@
 
 
 
-       100-EXIT.
+        100-EXIT.
            EXIT.
 
 
 
-       TRT-INEX.
+        TRT-INEX.
            DISPLAY 'FICHIER MISE A JOUR INEXISTANT.'.
 
 
 
-       ABEND-PROG.
+        ABEND-PROG.
            DISPLAY 'ANOMALIE !!!'
            MOVE 'ANOMALY' TO AL-MESSAGE-TYPE
            MOVE 12 TO AL-RETURN-CODE
