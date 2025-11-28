@@ -32,7 +32,7 @@
       *  AL-DESCRIPTION  : Free-form description (truncated to fit)   *
       *                                                               *
       * LOG FORMAT: (80 chars fixed-length)                           *
-      *  YYYY-MM-DD HH:MM:SS | TYPE | PROGNAME | RC=nnnn | Desc...   *
+      *  YYYY-MM-DD HH:MM:SS | TYPE | PROG | USER | RC=nnnn | Desc   *
       *                                                               *
       *****************************************************************
        ENVIRONMENT DIVISION.
@@ -82,37 +82,43 @@
              WHEN 'ANOMALY'
                STRING WS-DATE-STR ' ' WS-TIME-STR ' | '
                       AL-MESSAGE-TYPE ' | ' AL-PROGRAM-NAME ' | '
+                      AL-USER-ID ' | '
                       'RC=' WS-RC-DISPLAY ' | '
-                      AL-DESCRIPTION(1:24)
+                      AL-DESCRIPTION(1:14)
                       DELIMITED BY SIZE INTO LOG-RECORD
              WHEN 'ERROR'
                STRING WS-DATE-STR ' ' WS-TIME-STR ' | '
                       AL-MESSAGE-TYPE ' | ' AL-PROGRAM-NAME ' | '
+                      AL-USER-ID ' | '
                       'RC=' WS-RC-DISPLAY ' | '
-                      AL-DESCRIPTION(1:26)
+                      AL-DESCRIPTION(1:16)
                       DELIMITED BY SIZE INTO LOG-RECORD
              WHEN 'WARNING'
                STRING WS-DATE-STR ' ' WS-TIME-STR ' | '
                       AL-MESSAGE-TYPE ' | ' AL-PROGRAM-NAME ' | '
+                      AL-USER-ID ' | '
                       'RC=' WS-RC-DISPLAY ' | '
-                      AL-DESCRIPTION(1:24)
+                      AL-DESCRIPTION(1:14)
                       DELIMITED BY SIZE INTO LOG-RECORD
              WHEN 'FATAL'
                STRING WS-DATE-STR ' ' WS-TIME-STR ' | '
                       AL-MESSAGE-TYPE ' | ' AL-PROGRAM-NAME ' | '
+                      AL-USER-ID ' | '
                       'RC=' WS-RC-DISPLAY ' | '
-                      AL-DESCRIPTION(1:28)
+                      AL-DESCRIPTION(1:18)
                       DELIMITED BY SIZE INTO LOG-RECORD
              WHEN 'ABEND'
               STRING WS-DATE-STR ' ' WS-TIME-STR ' | '
                      AL-MESSAGE-TYPE ' | ' AL-PROGRAM-NAME ' | '
+                     AL-USER-ID ' | '
                      'RC=' WS-RC-DISPLAY ' | '
-                     AL-DESCRIPTION(1:28)
+                     AL-DESCRIPTION(1:18)
                      DELIMITED BY SIZE INTO LOG-RECORD         
              WHEN OTHER
                STRING WS-DATE-STR ' ' WS-TIME-STR ' | '
                       AL-MESSAGE-TYPE ' | ' AL-PROGRAM-NAME ' | '
-                      AL-DESCRIPTION(1:35)
+                      AL-USER-ID ' | '
+                      AL-DESCRIPTION(1:25)
                       DELIMITED BY SIZE INTO LOG-RECORD
            END-EVALUATE
       * Write record
