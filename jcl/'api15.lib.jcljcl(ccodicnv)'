@@ -1,0 +1,10 @@
+//API15COD JOB (ACCT#),'API15',MSGCLASS=H,REGION=4M,                    00010002
+//         CLASS=A,MSGLEVEL=(1,1),NOTIFY=&SYSUID,COND=(4,LT)            00020002
+//COMPIL EXEC IGYWCL,PARM.COBOL=(NODYNAM,ADV,OBJECT,LIB,TEST,APOST)     00060002
+//COBOL.SYSIN  DD DSN=API15.SOURCE.DB2(CODICONV),DISP=SHR               00070002
+//COBOL.SYSLIB DD DSN=CEE.SCEESAMP,DISP=SHR                             00080002
+//             DD DSN=API15.SOURCE.SQL,DISP=SHR                         00090002
+//LKED.SYSLMOD DD DSN=API15.COB.LOAD,DISP=(SHR,KEEP,KEEP)               00130002
+//LKED.SYSIN   DD *                                                     00140002
+ NAME CODICONV(R)                                                       00150002
+/*                                                                      00160002

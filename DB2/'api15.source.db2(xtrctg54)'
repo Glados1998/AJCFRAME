@@ -1,0 +1,321 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. XTRCTG54.
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT ETAT ASSIGN TO ETATDATA.
+       DATA DIVISION.
+       FILE SECTION.
+       FD  ETAT
+           RECORDING MODE F
+           RECORD CONTAINS 200 CHARACTERS.
+       01  ENR-ETAT  PIC X(200).
+       WORKING-STORAGE SECTION.
+           EXEC SQL INCLUDE SQLCA END-EXEC.
+           EXEC SQL INCLUDE CUSTO END-EXEC.
+           EXEC SQL INCLUDE DEPTS END-EXEC.
+           EXEC SQL INCLUDE EMPLO END-EXEC.
+           EXEC SQL INCLUDE ITEMS END-EXEC.
+           EXEC SQL INCLUDE PRODU END-EXEC.
+           EXEC SQL INCLUDE ORDER END-EXEC.
+
+           EXEC SQL
+             DECLARE CURSEUR_JOINTURE CURSOR FOR
+               SELECT
+                 O.O_NO,
+                 CHAR(O.O_DATE),
+                 C.COMPANY,
+                 C.ADDRESS,
+                 C.CITY,
+                 C.STATE,
+                 C.ZIP,
+                 C.PHONE,
+                 D.DNAME,
+                 E.LNAME,
+                 E.FNAME,
+                 I.P_NO,
+                 P.DESCRIPTION,
+                 I.QUANTITY,
+                 I.PRICE,
+                 P.PRICE,
+                 E.COM
+               FROM API15.ORDERS O
+               JOIN API15.CUSTOMERS  C ON C.C_NO = O.C_NO
+               JOIN API15.EMPLOYEES  E ON E.E_NO = O.S_NO
+               JOIN API15.DEPTS      D ON D.DEPT = E.DEPT
+               LEFT JOIN API15.ITEMS     I ON I.O_NO = O.O_NO
+               LEFT JOIN API15.PRODUCTS  P ON P.P_NO = I.P_NO
+               ORDER BY O.O_NO, I.P_NO
+           END-EXEC.
+
+       01  L-EDITION                   PIC X(200).
+       01  DATE-COMMANDE-TEXTE         PIC X(10).
+       01  NUM-COMMANDE-TEXTE          PIC Z(3).
+       01  QUANTITE-TEXTE              PIC Z(4).
+       01  PRIX-VENDU-TEXTE            PIC -9(5).99.
+       01  PRIX-CATALOGUE-TEXTE        PIC -9(5).99.
+       01  INDIC-FNAME                 PIC S9(4) COMP VALUE 0.
+       01  INDIC-PNO                   PIC S9(4) COMP VALUE 0.
+       01  INDIC-DESC                  PIC S9(4) COMP VALUE 0.
+       01  INDIC-QTY                   PIC S9(4) COMP VALUE 0.
+       01  INDITEMSPRICE               PIC S9(4) COMP VALUE 0.
+       01  INDPRODUPRICE               PIC S9(4) COMP VALUE 0.
+       01  IND-O-DATE                  PIC S9(4) COMP VALUE 0.
+       01  IND-COMPANY                 PIC S9(4) COMP VALUE 0.
+       01  IND-ADDRESS                 PIC S9(4) COMP VALUE 0.
+       01  IND-CITY                    PIC S9(4) COMP VALUE 0.
+       01  IND-STATE                   PIC S9(4) COMP VALUE 0.
+       01  IND-ZIP                     PIC S9(4) COMP VALUE 0.
+       01  IND-PHONE                   PIC S9(4) COMP VALUE 0.
+       01  IND-DNAME                   PIC S9(4) COMP VALUE 0.
+       01  IND-LNAME                   PIC S9(4) COMP VALUE 0.
+       01  ED-SQLCODE                  PIC -999.
+       01  WS-MSG                      PIC X(40).
+       01  WS-EMPLO-COM-EDIT          PIC 9.99.
+       01  IND-COM                    PIC S9(4) COMP VALUE 0.
+       01  WS-LOG-CMD                  PIC X.
+       01  WS-LOG-NOM                  PIC X(30).
+       01  WS-LOG-TXT                  PIC X(80).
+
+       PROCEDURE DIVISION.
+       LE-MAIN.
+           MOVE 'O' TO WS-LOG-CMD
+           MOVE SPACES TO WS-LOG-NOM WS-LOG-TXT
+           MOVE "YVES" TO WS-LOG-TXT
+           CALL 'LOGGERG5' USING WS-LOG-CMD WS-LOG-NOM WS-LOG-TXT
+           OPEN OUTPUT ETAT
+           PERFORM OPEN-CURSEUR-JOINTURE
+           MOVE 0 TO SQLCODE
+           PERFORM UNTIL SQLCODE = 100
+              EXEC SQL
+                 FETCH CURSEUR_JOINTURE INTO
+                :ORDER-O-NO,
+                :DATE-COMMANDE-TEXTE     :IND-O-DATE,
+                :CUSTO-COMPANY           :IND-COMPANY,
+                :CUSTO-ADDRESS           :IND-ADDRESS,
+                :CUSTO-CITY              :IND-CITY,
+                :CUSTO-STATE             :IND-STATE,
+                :CUSTO-ZIP               :IND-ZIP,
+                :CUSTO-PHONE             :IND-PHONE,
+                :DEPTS-DNAME             :IND-DNAME,
+                :EMPLO-LNAME             :IND-LNAME,
+                :EMPLO-FNAME             :INDIC-FNAME,
+                :ITEMS-P-NO  :INDIC-PNO,
+                :PRODU-DESCRIPTION   :INDIC-DESC,
+                :ITEMS-QUANTITY      :INDIC-QTY,
+                :ITEMS-PRICE      :INDITEMSPRICE,
+                :PRODU-PRICE      :INDPRODUPRICE,
+                :EMPLO-COM        :IND-COM
+              END-EXEC
+              IF SQLCODE = 0
+                 PERFORM TRAITER-VALEURS-NULL
+                 PERFORM CONSTRUIRE-ENR-ETAT
+                 PERFORM ECRIRE-LIGNE
+              ELSE
+                 IF SQLCODE < 0
+                    MOVE 'FETCH CURSEUR_JOINTURE' TO WS-MSG
+                    PERFORM TEST-SQLCODE
+                 END-IF
+              END-IF
+           END-PERFORM
+           EXEC SQL
+              CLOSE CURSEUR_JOINTURE
+           END-EXEC
+           MOVE 'CLOSE CURSEUR_JOINTURE' TO WS-MSG
+           PERFORM TEST-SQLCODE
+           CLOSE ETAT
+           MOVE 'F' TO WS-LOG-CMD
+           MOVE SPACES TO WS-LOG-NOM WS-LOG-TXT
+           MOVE "YVES" TO WS-LOG-TXT
+           CALL 'LOGGERG5' USING WS-LOG-CMD WS-LOG-NOM WS-LOG-TXT
+           GOBACK
+           .
+       LOGNUONO.
+           MOVE ORDER-O-NO      TO NUM-COMMANDE-TEXTE
+           MOVE SPACES          TO WS-LOG-TXT
+           STRING
+              'YVES O_NO='              DELIMITED BY SIZE
+              NUM-COMMANDE-TEXTE   DELIMITED BY SIZE
+              INTO WS-LOG-TXT
+           END-STRING
+           MOVE 'L' TO WS-LOG-CMD
+           CALL 'LOGGERG5' USING WS-LOG-CMD WS-LOG-NOM WS-LOG-TXT
+           .
+       ABEND-PROG.
+           EXEC SQL ROLLBACK END-EXEC
+           MOVE SQLCODE TO ED-SQLCODE
+           DISPLAY 'ABEND-PROG ROLLBACK ' ED-SQLCODE
+           MOVE 'ABEND-PROG'       TO WS-LOG-NOM
+           PERFORM LOGNUONO
+           MOVE 'F' TO WS-LOG-CMD
+           MOVE SPACES TO WS-LOG-NOM WS-LOG-TXT
+           MOVE "YVES" TO WS-LOG-TXT
+           CALL 'LOGGERG5' USING WS-LOG-CMD WS-LOG-NOM WS-LOG-TXT
+           GOBACK
+           .
+       TEST-SQLCODE.
+           MOVE SQLCODE TO ED-SQLCODE
+           EVALUATE TRUE
+              WHEN SQLCODE = ZERO
+                 CONTINUE
+              WHEN SQLCODE > ZERO
+                 DISPLAY 'WARNING - ' WS-MSG ' : ' ED-SQLCODE
+                 MOVE 'SQL-WARNING' TO WS-LOG-NOM
+                 PERFORM LOGNUONO
+              WHEN OTHER
+                 MOVE 'SQL-ERROR' TO WS-LOG-NOM
+                 PERFORM LOGNUONO
+                 DISPLAY 'ANOMALIE - ' WS-MSG ' : ' ED-SQLCODE
+                 PERFORM ABEND-PROG
+           END-EVALUATE
+           .
+       OPEN-CURSEUR-JOINTURE.
+           EXEC SQL
+              OPEN CURSEUR_JOINTURE
+           END-EXEC
+           MOVE 'OPEN CURSEUR_JOINTURE' TO WS-MSG
+           PERFORM TEST-SQLCODE
+           .
+       TRAITER-VALEURS-NULL.
+           IF IND-O-DATE < 0
+              MOVE 'ORDERS.O_DATE' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE SPACES TO DATE-COMMANDE-TEXTE
+           END-IF
+           IF IND-COMPANY < 0
+              MOVE 'CUSTOMERS.COMPANY' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE 0      TO CUSTO-COMPANY-LEN
+              MOVE SPACES TO CUSTO-COMPANY-TEXT
+           END-IF
+           IF IND-ADDRESS < 0
+              MOVE 'CUSTO-ADDRESS' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE 0      TO CUSTO-ADDRESS-LEN
+              MOVE SPACES TO CUSTO-ADDRESS-TEXT
+           END-IF
+           IF IND-CITY < 0
+              MOVE 'CUSTO-CITY' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE SPACES TO CUSTO-CITY
+           END-IF
+           IF IND-STATE < 0
+              MOVE 'CUSTO-STATE' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE SPACES TO CUSTO-STATE
+           END-IF
+           IF IND-ZIP < 0
+              MOVE 'CUSTO-ZIP' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE SPACES TO CUSTO-ZIP
+           END-IF
+           IF IND-PHONE < 0
+              MOVE 'CUSTO-PHONE' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE SPACES TO CUSTO-PHONE
+           END-IF
+           IF IND-DNAME < 0
+              MOVE 'CUSTO-DNAME' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE SPACES TO DEPTS-DNAME
+           END-IF
+           IF IND-LNAME < 0
+              MOVE 'CUSTO-LNAME' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE SPACES TO EMPLO-LNAME
+           END-IF
+           IF INDIC-FNAME < 0
+              MOVE 'CUSTO-FNAME' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE 0      TO EMPLO-FNAME-LEN
+              MOVE SPACES TO EMPLO-FNAME-TEXT
+           END-IF
+           IF INDIC-PNO < 0
+              MOVE 'ITEMS-P-NO' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE SPACES TO ITEMS-P-NO
+           END-IF
+           IF INDIC-DESC < 0
+              MOVE 'PRODU-DESCRIPTION' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE 0      TO PRODU-DESCRIPTION-LEN
+              MOVE SPACES TO PRODU-DESCRIPTION-TEXT
+           END-IF
+           IF INDIC-QTY < 0
+              MOVE 'ITEMS-QUANTITY' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE 0 TO ITEMS-QUANTITY
+           END-IF
+           IF INDITEMSPRICE < 0
+              MOVE 'ITEMS-PRICE' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE 0 TO ITEMS-PRICE
+           END-IF
+           IF INDPRODUPRICE < 0
+              MOVE 'PRODU-PRICE' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE 0 TO PRODU-PRICE
+           END-IF
+           IF IND-COM < 0
+              MOVE 'EMPLO-COM' TO WS-LOG-NOM
+              PERFORM LOGNUONO
+              MOVE 0 TO EMPLO-COM
+           END-IF
+           .
+       CONSTRUIRE-ENR-ETAT.
+           MOVE ALL ' ' TO L-EDITION
+           MOVE ORDER-O-NO       TO NUM-COMMANDE-TEXTE
+           MOVE ITEMS-QUANTITY   TO QUANTITE-TEXTE
+           MOVE ITEMS-PRICE      TO PRIX-VENDU-TEXTE
+           MOVE PRODU-PRICE      TO PRIX-CATALOGUE-TEXTE
+           MOVE EMPLO-COM        TO WS-EMPLO-COM-EDIT
+           IF IND-COMPANY     < 0 MOVE 0 TO CUSTO-COMPANY-LEN.
+           IF IND-ADDRESS     < 0 MOVE 0 TO CUSTO-ADDRESS-LEN.
+           IF CUSTO-CITY-LEN  < 0 MOVE 0 TO CUSTO-CITY-LEN.
+           IF IND-DNAME       < 0 MOVE 0 TO DEPTS-DNAME-LEN.
+           IF IND-LNAME       < 0 MOVE 0 TO EMPLO-LNAME-LEN.
+           IF INDIC-FNAME     < 0 MOVE 0 TO EMPLO-FNAME-LEN.
+           IF INDIC-DESC      < 0 MOVE 0 TO PRODU-DESCRIPTION-LEN.
+
+           STRING
+               NUM-COMMANDE-TEXTE
+               DELIMITED BY SIZE  ';'
+               DATE-COMMANDE-TEXTE
+               DELIMITED BY SIZE  ';'
+               CUSTO-COMPANY-TEXT  (1:CUSTO-COMPANY-LEN)
+               DELIMITED BY SIZE  ';'
+               CUSTO-ADDRESS-TEXT      (1:CUSTO-ADDRESS-LEN)
+               DELIMITED BY SIZE  ';'
+               CUSTO-CITY-TEXT         (1:CUSTO-CITY-LEN)
+               DELIMITED BY SIZE  ';'
+               CUSTO-STATE
+               DELIMITED BY SIZE  ';'
+               CUSTO-ZIP
+               DELIMITED BY SIZE  ';'
+               CUSTO-PHONE
+               DELIMITED BY SIZE  ';'
+               DEPTS-DNAME-TEXT        (1:DEPTS-DNAME-LEN)
+               DELIMITED BY SIZE  ';'
+               EMPLO-LNAME-TEXT        (1:EMPLO-LNAME-LEN)
+               DELIMITED BY SIZE  ';'
+               EMPLO-FNAME-TEXT        (1:EMPLO-FNAME-LEN)
+               DELIMITED BY SIZE  ';'
+               WS-EMPLO-COM-EDIT
+               DELIMITED BY SIZE ';'
+               PRODU-DESCRIPTION-TEXT  (1:PRODU-DESCRIPTION-LEN)
+               DELIMITED BY SIZE  ';'
+               ITEMS-P-NO
+               DELIMITED BY SIZE ';'
+               QUANTITE-TEXTE
+               DELIMITED BY SIZE  ';'
+               PRIX-VENDU-TEXTE
+               DELIMITED BY SIZE  ';'
+               PRIX-CATALOGUE-TEXTE
+               DELIMITED BY SIZE
+               INTO L-EDITION
+           END-STRING.
+
+
+       ECRIRE-LIGNE.
+           WRITE ENR-ETAT FROM L-EDITION
+           .
