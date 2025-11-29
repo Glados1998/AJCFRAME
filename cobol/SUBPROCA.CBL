@@ -56,7 +56,7 @@
                FROM API4.PRODUCTS P
                LEFT JOIN API4.ITEMS I ON I.P_NO = P.P_NO  
                LEFT JOIN API4.ORDERS O ON O.O_NO = I.O_NO
-               WHERE O.O_DATE IS NOT NULL
+               WHERE YEAR(O.O_DATE) BETWEEN 2023 AND 2025
                GROUP BY P.P_NO, P.DESCRIPTION
                ORDER BY P.DESCRIPTION
            END-EXEC.
