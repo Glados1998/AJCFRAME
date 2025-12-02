@@ -1,0 +1,46 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CODICONV.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       DATA DIVISION.
+       LINKAGE SECTION.
+       01 L-F-QTY            PIC X(4).
+       01 L-F-COM-RATE       PIC X(4).
+       01 L-F-PRICE-SOLD     PIC X(9).
+       01 L-F-PRICE-CATALOG  PIC X(9).
+       01 L-WS-QTY-NUM       PIC S9(4).
+       01 L-WS-COM-RATE-NUM  PIC S9V99.
+       01 L-WS-PRICE-NUM     PIC S9(5)V99.
+       01 L-WS-CAT-NUM       PIC S9(5)V99.
+       PROCEDURE DIVISION
+           USING
+               L-F-QTY
+               L-F-COM-RATE
+               L-F-PRICE-SOLD
+               L-F-PRICE-CATALOG
+               L-WS-QTY-NUM
+               L-WS-COM-RATE-NUM
+               L-WS-PRICE-NUM
+               L-WS-CAT-NUM.
+           MOVE 0 TO L-WS-QTY-NUM
+           IF L-F-QTY NOT = SPACES
+              COMPUTE L-WS-QTY-NUM = FUNCTION NUMVAL(L-F-QTY)
+           END-IF
+           MOVE 0 TO L-WS-COM-RATE-NUM
+           IF L-F-COM-RATE NOT = SPACES
+              COMPUTE L-WS-COM-RATE-NUM =
+                        FUNCTION NUMVAL(L-F-COM-RATE)
+           END-IF
+           MOVE 0 TO L-WS-PRICE-NUM
+           MOVE 0 TO L-WS-CAT-NUM
+           IF L-F-PRICE-SOLD NOT = SPACES
+              COMPUTE L-WS-PRICE-NUM =
+                        FUNCTION NUMVAL(L-F-PRICE-SOLD)
+           END-IF
+           IF L-F-PRICE-CATALOG NOT = SPACES
+              COMPUTE L-WS-CAT-NUM =
+                        FUNCTION NUMVAL(L-F-PRICE-CATALOG)
+           END-IF
+           GOBACK.

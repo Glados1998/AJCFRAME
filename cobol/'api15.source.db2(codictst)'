@@ -1,0 +1,192 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CODICTST.
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SPECIAL-NAMES.
+           DECIMAL-POINT IS COMMA.
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01 WS-F-QTY            PIC X(4).
+       01 WS-F-COM-RATE       PIC X(4).
+       01 WS-F-PRICE-SOLD     PIC X(9).
+       01 WS-F-PRICE-CATALOG  PIC X(9).
+       01 WS-WS-QTY-NUM       PIC S9(4).
+       01 WS-WS-COM-RATE-NUM  PIC S9V99.
+       01 WS-WS-PRICE-NUM     PIC S9(5)V99.
+       01 WS-WS-CAT-NUM       PIC S9(5)V99.
+       01 TEST-NAME           PIC X(30).
+       01 EXPECTED            PIC S9(9)V99.
+       01 ACTUAL              PIC S9(9)V99.
+       01 L-SEP               PIC X(40) VALUE ALL "*".
+       LINKAGE SECTION.
+       COPY TESTCONT.
+       PROCEDURE DIVISION USING TEST-CONTEXT.
+           PERFORM TEST-CONVERT-QTY
+           DISPLAY 'RUN ', TESTS-RUN, ' OK ', PASSES,
+                   ' KO ', FAILURES
+           DISPLAY L-SEP
+           PERFORM TEST-CONVERT-COM
+           DISPLAY 'RUN ', TESTS-RUN, ' OK ', PASSES,
+                   ' KO ', FAILURES
+           DISPLAY L-SEP
+           PERFORM TEST-CONVERT-PRICE
+           DISPLAY 'RUN ', TESTS-RUN, ' OK ', PASSES,
+                   ' KO ', FAILURES
+           DISPLAY L-SEP
+           GOBACK.
+       TEST-CONVERT-QTY.
+           PERFORM T-QTY-NORMAL
+           PERFORM T-QTY-SPACES
+           .
+       T-QTY-NORMAL.
+           MOVE 'T-QTY-NORMAL' TO TEST-NAME
+           MOVE '0010' TO WS-F-QTY
+           MOVE SPACES TO WS-F-COM-RATE
+           MOVE SPACES TO WS-F-PRICE-SOLD
+           MOVE SPACES TO WS-F-PRICE-CATALOG
+           CALL 'CODICONV'
+                USING WS-F-QTY
+                      WS-F-COM-RATE
+                      WS-F-PRICE-SOLD
+                      WS-F-PRICE-CATALOG
+                      WS-WS-QTY-NUM
+                      WS-WS-COM-RATE-NUM
+                      WS-WS-PRICE-NUM
+                      WS-WS-CAT-NUM
+           MOVE 10 TO EXPECTED
+           MOVE WS-WS-QTY-NUM TO ACTUAL
+           CALL 'ASSEQ' USING TEST-CONTEXT,
+                             TEST-NAME,
+                             EXPECTED,
+                             ACTUAL
+           .
+       T-QTY-SPACES.
+           MOVE 'T-QTY-SPACES' TO TEST-NAME
+           MOVE SPACES TO WS-F-QTY
+           MOVE SPACES TO WS-F-COM-RATE
+           MOVE SPACES TO WS-F-PRICE-SOLD
+           MOVE SPACES TO WS-F-PRICE-CATALOG
+           CALL 'CODICONV'
+                USING WS-F-QTY
+                      WS-F-COM-RATE
+                      WS-F-PRICE-SOLD
+                      WS-F-PRICE-CATALOG
+                      WS-WS-QTY-NUM
+                      WS-WS-COM-RATE-NUM
+                      WS-WS-PRICE-NUM
+                      WS-WS-CAT-NUM
+           MOVE 0 TO EXPECTED
+           MOVE WS-WS-QTY-NUM TO ACTUAL
+           CALL 'ASSEQ' USING TEST-CONTEXT,
+                             TEST-NAME,
+                             EXPECTED,
+                             ACTUAL
+           .
+       TEST-CONVERT-COM.
+           PERFORM T-COM-NORMAL
+           PERFORM T-COM-SPACES
+           .
+       T-COM-NORMAL.
+           MOVE 'T-COM-NORMAL' TO TEST-NAME
+           MOVE SPACES  TO WS-F-QTY
+           MOVE '0,15'  TO WS-F-COM-RATE
+           MOVE SPACES  TO WS-F-PRICE-SOLD
+           MOVE SPACES  TO WS-F-PRICE-CATALOG
+           CALL 'CODICONV'
+                USING WS-F-QTY
+                      WS-F-COM-RATE
+                      WS-F-PRICE-SOLD
+                      WS-F-PRICE-CATALOG
+                      WS-WS-QTY-NUM
+                      WS-WS-COM-RATE-NUM
+                      WS-WS-PRICE-NUM
+                      WS-WS-CAT-NUM
+           MOVE 0,15 TO EXPECTED
+           MOVE WS-WS-COM-RATE-NUM TO ACTUAL
+           CALL 'ASSEQ' USING TEST-CONTEXT,
+                             TEST-NAME,
+                             EXPECTED,
+                             ACTUAL
+           .
+       T-COM-SPACES.
+           MOVE 'T-COM-SPACES' TO TEST-NAME
+           MOVE SPACES TO WS-F-QTY
+           MOVE SPACES TO WS-F-COM-RATE
+           MOVE SPACES TO WS-F-PRICE-SOLD
+           MOVE SPACES TO WS-F-PRICE-CATALOG
+           CALL 'CODICONV'
+                USING WS-F-QTY
+                      WS-F-COM-RATE
+                      WS-F-PRICE-SOLD
+                      WS-F-PRICE-CATALOG
+                      WS-WS-QTY-NUM
+                      WS-WS-COM-RATE-NUM
+                      WS-WS-PRICE-NUM
+                      WS-WS-CAT-NUM
+           MOVE 0 TO EXPECTED
+           MOVE WS-WS-COM-RATE-NUM TO ACTUAL
+           CALL 'ASSEQ' USING TEST-CONTEXT,
+                             TEST-NAME,
+                             EXPECTED,
+                             ACTUAL
+           .
+       TEST-CONVERT-PRICE.
+           PERFORM T-PRICE-NORMAL
+           PERFORM T-PRICE-SPACES
+           .
+       T-PRICE-NORMAL.
+           MOVE 'T-PRICE-NORMAL' TO TEST-NAME
+           MOVE SPACES     TO WS-F-QTY
+           MOVE SPACES     TO WS-F-COM-RATE
+           MOVE '00100,50' TO WS-F-PRICE-SOLD
+           MOVE '00120,00' TO WS-F-PRICE-CATALOG
+           CALL 'CODICONV'
+                USING WS-F-QTY
+                      WS-F-COM-RATE
+                      WS-F-PRICE-SOLD
+                      WS-F-PRICE-CATALOG
+                      WS-WS-QTY-NUM
+                      WS-WS-COM-RATE-NUM
+                      WS-WS-PRICE-NUM
+                      WS-WS-CAT-NUM
+           MOVE 100,50 TO EXPECTED
+           MOVE WS-WS-PRICE-NUM TO ACTUAL
+           CALL 'ASSEQ' USING TEST-CONTEXT,
+                             TEST-NAME,
+                             EXPECTED,
+                             ACTUAL
+           MOVE 120,00 TO EXPECTED
+           MOVE WS-WS-CAT-NUM TO ACTUAL
+           CALL 'ASSEQ' USING TEST-CONTEXT,
+                             TEST-NAME,
+                             EXPECTED,
+                             ACTUAL
+           .
+       T-PRICE-SPACES.
+           MOVE 'T-PRICE-SPACES' TO TEST-NAME
+           MOVE SPACES TO WS-F-QTY
+           MOVE SPACES TO WS-F-COM-RATE
+           MOVE SPACES TO WS-F-PRICE-SOLD
+           MOVE SPACES TO WS-F-PRICE-CATALOG
+           CALL 'CODICONV'
+                USING WS-F-QTY
+                      WS-F-COM-RATE
+                      WS-F-PRICE-SOLD
+                      WS-F-PRICE-CATALOG
+                      WS-WS-QTY-NUM
+                      WS-WS-COM-RATE-NUM
+                      WS-WS-PRICE-NUM
+                      WS-WS-CAT-NUM
+           MOVE 0 TO EXPECTED
+           MOVE WS-WS-PRICE-NUM TO ACTUAL
+           CALL 'ASSEQ' USING TEST-CONTEXT,
+                             TEST-NAME,
+                             EXPECTED,
+                             ACTUAL
+           MOVE 0 TO EXPECTED
+           MOVE WS-WS-CAT-NUM TO ACTUAL
+           CALL 'ASSEQ' USING TEST-CONTEXT,
+                             TEST-NAME,
+                             EXPECTED,
+                             ACTUAL
+           .
