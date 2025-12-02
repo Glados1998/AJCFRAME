@@ -9,7 +9,7 @@
       *                                                               *
       * CALLED:  Subprograms via dynamic CALL (CBL DYNAM)             *
       *                                                               *
-      * RETURN CODES: 0=success, 4=invalid PARM, 8=error              *
+      *                                                               *
       *****************************************************************
        
        DATA DIVISION.
