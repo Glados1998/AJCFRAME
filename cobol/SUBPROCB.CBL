@@ -5,8 +5,6 @@
       * Calculates total sales amount per city                        *
       *****************************************************************
        
-       ENVIRONMENT DIVISION.
-       
        DATA DIVISION.
        WORKING-STORAGE SECTION.
            EXEC SQL

@@ -6,8 +6,6 @@
       * show a total of commissions and employees combined             *         
       *****************************************************************
        
-       ENVIRONMENT DIVISION.
-       
        DATA DIVISION.
        WORKING-STORAGE SECTION.
            EXEC SQL

@@ -3,9 +3,7 @@
       *****************************************************************
       * SUBPROCA - Aggregate quantities per product (last 3 years)   *
       * Uses actual years from ORDERS table: 2023, 2024, 2025        *
-      *****************************************************************
-       
-       ENVIRONMENT DIVISION.
+      *****************************************************************lll
        
        DATA DIVISION.
        WORKING-STORAGE SECTION.
